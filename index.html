@@ -23,6 +23,9 @@ header{display:flex;align-items:center;justify-content:space-between;gap:10px}
 h1{margin:0;font-size:1.4rem;letter-spacing:.5px}
 select,button{font:inherit;color:inherit}
 select{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:3px;gap:3px}
+.seg button{border:0;background:transparent;border-radius:9px;padding:9px 0;cursor:pointer;font-weight:600;color:var(--muted)}
+.seg button.on{background:var(--accent);color:var(--accent-ink)}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px 6px;text-align:center}
 .stat b{display:block;font-size:1.15rem;font-variant-numeric:tabular-nums}
@@ -36,10 +39,33 @@ select{background:var(--panel);border:1px solid var(--line);border-radius:10px;p
 .num.sel{border-color:var(--accent);background:var(--card-sel)}
 .num.res{border-style:dashed}
 .num.frac{font-size:clamp(1.6rem,8vw,2.4rem)}
+.num.q{border-style:dashed;color:var(--muted)}
+.num.xv{border-color:var(--accent)}
 .num.pop{animation:pop .25s}
 @keyframes pop{0%{transform:scale(.7)}60%{transform:scale(1.08)}100%{transform:scale(1)}}
 .num.shake{animation:shake .3s}
 @keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+/* Variables mode */
+.picker{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.plabel{font-size:.8rem;color:var(--muted);text-align:center}
+.pks{display:grid;grid-template-columns:repeat(9,1fr);gap:4px}
+.pk{background:var(--op);border:1px solid var(--line);border-radius:10px;padding:10px 0;font-weight:700;cursor:pointer}
+.pk.on{background:var(--op-sel);color:var(--accent-ink);border-color:var(--op-sel)}
+.pk:disabled{opacity:.5;cursor:default}
+.wheels{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.wheel{border:2px solid var(--line);border-radius:16px;padding:8px;position:relative}
+.wheel.ok{border-color:var(--good)}
+.wheel.ok::after{content:"\2713 24";position:absolute;top:-10px;right:10px;background:var(--good);color:#fff;font-size:.75rem;font-weight:700;padding:1px 8px;border-radius:10px}
+.wl{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;text-align:center;margin-bottom:6px}
+.wheels{position:relative}
+.bridge{--bw:calc(min(100vw,520px)*.21);position:absolute;left:calc(50% - var(--bw)/2);bottom:8px;width:var(--bw);
+  aspect-ratio:1.2/1;z-index:2;border-radius:12px;font-size:clamp(1.4rem,7vw,2.2rem);box-shadow:0 4px 14px rgba(0,0,0,.22)}
+.bridge.set{border-color:var(--accent)}
+.bridge.dim{opacity:.45}
+.num.ph{visibility:hidden;pointer-events:none}
+.cards.sm{gap:8px}
+.sm .num{aspect-ratio:1.2/1;border-radius:12px;font-size:clamp(1.4rem,7vw,2.2rem)}
+.sm .num.frac{font-size:clamp(1.1rem,5.5vw,1.7rem)}
 .ops{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
 .op{background:var(--op);border:1px solid var(--line);border-radius:14px;padding:12px 0;font-size:1.7rem;font-weight:600;cursor:pointer}
 .op.sel{background:var(--op-sel);color:var(--accent-ink);border-color:var(--op-sel)}
@@ -65,6 +91,11 @@ footer{text-align:center;color:var(--muted);font-size:.78rem}
     </select>
   </header>
 
+  <div class="seg" id="seg" role="tablist" aria-label="Game mode">
+    <button data-mode="classic" class="on">Classic</button>
+    <button data-mode="var">Variables</button>
+  </div>
+
   <section class="stats" aria-label="Stats">
     <div class="stat"><b id="sTime">0:00</b><span>Time</span></div>
     <div class="stat"><b id="sSolved">0</b><span>Solved</span></div>
@@ -74,6 +105,17 @@ footer{text-align:center;color:var(--muted);font-size:.78rem}
 
   <section class="board">
     <div class="cards" id="cards"></div>
+    <div id="vbox" style="display:none">
+      <div class="picker">
+        <div class="plabel">Pick a value for ? (1-9). The shared ? tile can be used once on each wheel.</div>
+        <div class="pks" id="pks"></div>
+      </div>
+      <div class="wheels">
+        <div class="wheel" id="wh0"><div class="wl">Left</div><div class="cards sm" id="wc0"></div></div>
+        <div class="wheel" id="wh1"><div class="wl">Right</div><div class="cards sm" id="wc1"></div></div>
+        <button class="num bridge" id="bridge" aria-label="Shared unknown value">?</button>
+      </div>
+    </div>
     <div class="ops" id="ops">
       <button class="op" data-op="+" aria-label="plus">+</button>
       <button class="op" data-op="-" aria-label="minus">−</button>
@@ -94,7 +136,7 @@ footer{text-align:center;color:var(--muted);font-size:.78rem}
     <div class="hint" id="hintBox"></div>
   </section>
 
-  <footer>Combine all four numbers with + − × ÷ to make 24. Each number is used once.</footer>
+  <footer id="foot"></footer>
 </main>
 
 <script>
@@ -164,65 +206,195 @@ function generate(level, seen){
 }
 // ==END SOLVER==
 
+// ==VARIABLES==
+// Variables mode: two sets of 3 numbers share one unknown "?" (1-9).
+// Exactly one value of ? makes 24 on both sets.
+function can24(items){
+  if(items.length===1) return items[0][0]===24 && items[0][1]===1;
+  for(let i=0;i<items.length;i++) for(let j=i+1;j<items.length;j++){
+    const a=items[i], b=items[j], rest=items.filter((_,k)=>k!==i&&k!==j);
+    for(const op of ['+','-','*','/']){
+      const ps=(op==='+'||op==='*')?[[a,b]]:[[a,b],[b,a]];
+      for(const [x,y] of ps){ const v=apply(op,x,y); if(v && can24([...rest,v])) return true; }
+    }
+  }
+  return false;
+}
+const VLEVELS = {
+  easy:   {max:9,  lo:5, hi:999},
+  medium: {max:13, lo:2, hi:4},
+  hard:   {max:13, lo:1, hi:1}
+};
+const vpools = {};
+// Every sorted triple 1..max with the list of ? values (1-9) that can make 24; kept if 2+ values work.
+function vpool(max){
+  if(vpools[max]) return vpools[max];
+  const P=[];
+  for(let a=1;a<=max;a++) for(let b=a;b<=max;b++) for(let c=b;c<=max;c++){
+    const vs=[];
+    for(let y=1;y<=9;y++) if(can24([a,b,c,y].map(n=>[n,1]))) vs.push(y);
+    if(vs.length>=2) P.push({s:[a,b,c], vs, cnt:{}});
+  }
+  return vpools[max]=P;
+}
+const vcnt=(p,x)=>p.cnt[x] ?? (p.cnt[x]=solve([...p.s,x]).length);
+const pickOne=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+function generateVar(level, seen){
+  const L=VLEVELS[level], P=vpool(L.max);
+  for(let t=0;t<4000;t++){
+    const x=1+Math.floor(Math.random()*9);
+    const cand=P.filter(p=>p.vs.includes(x));
+    if(cand.length<2) continue;
+    let A=pickOne(cand);
+    const Bs=cand.filter(p=>p!==A && p.vs.filter(v=>A.vs.includes(v)).length===1);
+    if(!Bs.length) continue;
+    let B=pickOne(Bs);
+    const c=Math.min(vcnt(A,x), vcnt(B,x));
+    if(c<L.lo || c>L.hi) continue;
+    if(Math.random()<.5) [A,B]=[B,A];
+    const key=[A.s.join(','),B.s.join(','),x].join('|');
+    if(seen && seen.has(key)) continue;
+    if(seen) seen.add(key);
+    return {A:shuffle(A.s), B:shuffle(B.s), x, VA:A.vs, VB:B.vs,
+            solsA:solve([...A.s,x]), solsB:solve([...B.s,x]), key};
+  }
+  return null;
+}
+// ==END VARIABLES==
+
 if (typeof document !== 'undefined') (function(){
   const $ = id => document.getElementById(id);
   const store = {
     get(k,d){ try{ const v=localStorage.getItem('g24_'+k); return v===null?d:JSON.parse(v);}catch(e){return d} },
     set(k,v){ try{ localStorage.setItem('g24_'+k, JSON.stringify(v)); }catch(e){} }
   };
+  const blank = () => ({solved:0, streak:0, best:{easy:null,medium:null,hard:null}});
 
+  let mode  = store.get('mode','classic');
   let level = store.get('level','medium');
-  let stats = store.get('stats',{solved:0, streak:0, best:{easy:null,medium:null,hard:null}});
+  const S = { classic: store.get('stats',blank()), var: store.get('vstats',blank()) };
+  const st = () => S[mode];
+  const saveStats = () => store.set(mode==='var'?'vstats':'stats', st());
   const seen = new Set();
-  let card, items, history, selIdx, selOp, startT, timer, done, hintsShown, clean;
+  const NAMES = ['Left','Right'];
+
+  let card, boards, history, sel, selOp, xVal, startT, timer, done, hintsShown, hintList, clean;
 
   $('level').value = level;
 
   function fmtTime(s){ return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); }
   function renderStats(){
-    $('sSolved').textContent = stats.solved;
-    $('sStreak').textContent = stats.streak;
-    const b = stats.best[level];
+    const s=st();
+    $('sSolved').textContent = s.solved;
+    $('sStreak').textContent = s.streak;
+    const b = s.best[level];
     $('sBest').textContent = b==null ? '-' : fmtTime(b);
   }
   function tick(){ $('sTime').textContent = fmtTime(Math.floor((Date.now()-startT)/1000)); }
   function setMsg(t,cls){ const m=$('msg'); m.textContent=t; m.className='msg '+(cls||'info'); }
+  const defaultMsg = () => mode==='var' ? (xVal==null ? 'Pick a value for ?' : 'Make 24 on both wheels') : 'Make 24';
+
+  function applyModeUI(){
+    document.querySelectorAll('#seg button').forEach(b=>b.classList.toggle('on', b.dataset.mode===mode));
+    $('foot').textContent = mode==='var'
+      ? 'Find the ? (1-9) that makes 24 on both wheels. Each wheel uses its three numbers plus the shared ?, each once.'
+      : 'Combine all four numbers with + − × ÷ to make 24. Each number is used once.';
+  }
 
   function newCard(){
-    const c = generate(level, seen);
+    const needBuild = mode==='var' && !vpools[VLEVELS[level].max];
+    if(needBuild){ setMsg('Building cards...'); setTimeout(doNew,30); } else doNew();
+  }
+
+  function doNew(){
+    const c = mode==='var' ? generateVar(level, seen) : generate(level, seen);
     if(!c){ setMsg('Could not generate a card, try again','bad'); return; }
     if(seen.size>400) seen.clear();
-    card = c;
-    resetBoard();
+    card = c; xVal = null;
+    resetBoards();
     startT = Date.now(); clearInterval(timer); timer=setInterval(tick,500); tick();
-    done=false; clean=true; hintsShown=0;
+    done=false; clean=true; hintsShown=0; hintList=[];
+    if(mode==='var'){
+      const j=a=>a.join(', ');
+      hintList=[
+        `Left wheel makes 24 with ? = ${j(c.VA)}`,
+        `Right wheel makes 24 with ? = ${j(c.VB)}`,
+        `So ? = ${c.x}`,
+        `Left wheel steps:\n${c.solsA[0].s.join('\n')}`,
+        `Right wheel steps:\n${c.solsB[0].s.join('\n')}`
+      ];
+    } else {
+      hintList = c.sols[0].s.map((_,i)=>c.sols[0].s.slice(0,i+1).join('\n')+(i<c.sols[0].s.length-1?'\n...':''));
+    }
     $('hintBox').className='hint'; $('hintBox').textContent='';
     $('next').className='btn primary';
     $('next').textContent='New card';
-    setMsg('Make 24');
+    setMsg(defaultMsg());
     render();
   }
 
-  function resetBoard(){
-    items = card.nums.map((n,i)=>({v:[n,1], res:false}));
-    history=[]; selIdx=null; selOp=null;
+  function initItems(b){
+    if(mode==='classic') return card.nums.map(n=>({v:[n,1]}));
+    return (b===0 ? card.A : card.B).map(n=>({v:[n,1]}));
+  }
+  // In Variables mode each wheel has its own unused copy of the shared ? (xLeft).
+  function resetBoards(){
+    const n = mode==='var' ? 2 : 1;
+    boards = Array.from({length:n}, (_,b)=>({items:initItems(b), solved:false, xLeft:mode==='var'}));
+    history=[]; sel=null; selOp=null;
   }
 
   function label(it){
     const [n,d]=it.v;
     return d===1 ? String(n) : `<span style="display:inline-flex;flex-direction:column;align-items:center;line-height:1.05"><span style="border-bottom:3px solid currentColor;padding:0 6px">${n}</span><span>${d}</span></span>`;
   }
+  const boxFor = b => mode==='var' ? $('wc'+b) : $('cards');
 
-  function render(popIdx){
-    const box=$('cards'); box.innerHTML='';
-    items.forEach((it,i)=>{
-      const b=document.createElement('button');
-      b.className='num'+(i===selIdx?' sel':'')+(it.res?' res':'')+(it.v[1]!==1?' frac':'')+(i===popIdx?' pop':'');
-      b.innerHTML=label(it);
-      b.setAttribute('aria-label', fmt(it.v));
-      b.onclick=()=>pick(i);
-      box.appendChild(b);
-    });
+  // Grid slot for each item. In Variables mode the empty slot sits next to the center
+  // so the shared ? tile can overlap both wheels.
+  const slotPos = b => mode==='classic' ? [0,1,2,3] : (b===0 ? [0,1,2] : [0,1,3]);
+  const itemEl = (b,i) => boxFor(b).children[slotPos(b)[i]];
+
+  function fill(b, pop){
+    const box=boxFor(b); box.innerHTML='';
+    const pos=slotPos(b);
+    const bySlot={};
+    boards[b].items.forEach((it,i)=>{ bySlot[pos[i]]=i; });
+    const total = mode==='classic' ? boards[b].items.length : 4;
+    for(let s=0;s<total;s++){
+      const el=document.createElement('button');
+      if(!(s in bySlot)){ el.className='num ph'; el.tabIndex=-1; el.setAttribute('aria-hidden','true'); box.appendChild(el); continue; }
+      const i=bySlot[s], it=boards[b].items[i];
+      let cls='num';
+      if(sel && sel.b===b && sel.i===i) cls+=' sel';
+      if(it.res) cls+=' res';
+      if(it.v[1]!==1) cls+=' frac';
+      if(pop && pop.b===b && pop.i===i) cls+=' pop';
+      el.className=cls;
+      el.innerHTML = label(it);
+      el.setAttribute('aria-label', fmt(it.v));
+      el.onclick=()=>pick(b,i);
+      box.appendChild(el);
+    }
+  }
+
+  function render(pop){
+    const isVar = mode==='var';
+    $('cards').style.display = isVar ? 'none' : 'grid';
+    $('vbox').style.display = isVar ? 'block' : 'none';
+    boards.forEach((_,b)=>fill(b,pop));
+    if(isVar){
+      boards.forEach((bd,b)=>$('wh'+b).classList.toggle('ok', bd.solved));
+      const br=$('bridge');
+      br.textContent = xVal==null ? '?' : xVal;
+      br.className = 'num bridge'+(xVal!=null?' set':'')+(sel&&sel.x?' sel':'')+(boards.every(t=>!t.xLeft)?' dim':'');
+      br.onclick = pickShared;
+      document.querySelectorAll('.pk').forEach(p=>{
+        p.classList.toggle('on', +p.dataset.x===xVal);
+        p.disabled = done;
+      });
+    }
     document.querySelectorAll('.op').forEach(o=>o.classList.toggle('sel', o.dataset.op===selOp));
     $('undo').disabled = history.length===0 || done;
     $('reset').disabled = history.length===0 || done;
@@ -231,79 +403,143 @@ if (typeof document !== 'undefined') (function(){
     $('reveal').disabled = done;
   }
 
-  function pick(i){
+  function pick(b,i){
     if(done) return;
-    if(selIdx===null){ selIdx=i; render(); return; }
-    if(selIdx===i){ selIdx=null; render(); return; }
-    if(!selOp){ selIdx=i; render(); return; }
-    combine(selIdx, i, selOp);
+    if(mode==='var' && xVal==null){ setMsg('Pick a value for ? first','info'); return; }
+    if(boards[b].solved) return;
+    if(sel===null){ sel={b,i}; render(); return; }
+    if(sel.x){
+      // shared ? was selected first: x op this number
+      if(!selOp){ sel={b,i}; render(); return; }
+      if(!boards[b].xLeft){ setMsg(`? is already used on the ${NAMES[b]} wheel`,'bad'); return; }
+      combine(b, {x:true}, {i}, selOp); return;
+    }
+    if(sel.b===b && sel.i===i){ sel=null; render(); return; }
+    if(sel.b!==b || !selOp){ sel={b,i}; render(); return; }
+    combine(b, {i:sel.i}, {i}, selOp);
   }
 
-  function combine(i, j, op){
-    const a=items[i], b=items[j];
-    const v=apply(op,a.v,b.v);
+  // Tap on the shared ? tile (Variables mode)
+  function pickShared(){
+    if(done) return;
+    if(xVal==null){ setMsg('Pick a value for ? first','info'); return; }
+    if(sel===null){ sel={x:true}; render(); return; }
+    if(sel.x){ sel=null; render(); return; }
+    if(!selOp){ sel={x:true}; render(); return; }
+    if(!boards[sel.b].xLeft){ setMsg(`? is already used on the ${NAMES[sel.b]} wheel`,'bad'); return; }
+    combine(sel.b, {i:sel.i}, {x:true}, selOp);
+  }
+
+  // Operands are {i: itemIndex} or {x:true} (the shared ?). Result replaces both.
+  function combine(b, A, B, op){
+    const bd=boards[b];
+    const val = o => o.x ? [xVal,1] : bd.items[o.i].v;
+    const v=apply(op,val(A),val(B));
     if(!v){
       setMsg('Cannot divide by zero','bad');
-      const els=document.querySelectorAll('.num'); els[j].classList.add('shake');
-      selIdx=null; selOp=null; setTimeout(render,300); return;
+      const el = B.x ? $('bridge') : itemEl(b,B.i);
+      if(el) el.classList.add('shake');
+      sel=null; selOp=null; setTimeout(()=>render(),300); return;
     }
-    history.push({items:items.map(x=>({...x})), });
-    const rest=items.filter((_,k)=>k!==i&&k!==j);
-    items=[...rest,{v,res:true}];
-    selIdx=null; selOp=null;
-    if(items.length===1){
-      if(v[0]===24 && v[1]===1) return win();
-      setMsg(`That makes ${fmt(v)}, not 24. Undo or reset.`,'bad');
-    } else setMsg('Make 24');
-    render(items.length-1);
+    history.push({b, items:bd.items.map(t=>({...t})), xLeft:bd.xLeft});
+    const used=[A,B].filter(o=>!o.x).map(o=>o.i);
+    if(A.x||B.x) bd.xLeft=false;
+    const rest=bd.items.filter((_,k)=>!used.includes(k));
+    bd.items=[...rest,{v,res:true}];
+    sel=null; selOp=null;
+    const side = mode==='var' ? NAMES[b]+' wheel' : 'That';
+    if(bd.items.length===1 && !bd.xLeft){
+      if(v[0]===24 && v[1]===1){
+        bd.solved=true;
+        if(boards.every(t=>t.solved)){ render({b,i:0}); return win(); }
+        setMsg(`${side} done. Now the other wheel.`,'good');
+      } else {
+        setMsg(mode==='var'
+          ? `${side} makes ${fmt(v)}, not 24. Undo, or try a different ?`
+          : `That makes ${fmt(v)}, not 24. Undo or reset.`,'bad');
+      }
+    } else setMsg(defaultMsg());
+    render({b,i:bd.items.length-1});
   }
 
   function win(){
     done=true; clearInterval(timer);
     const secs=Math.floor((Date.now()-startT)/1000);
-    stats.solved++;
+    const s=st();
+    s.solved++;
     if(clean){
-      stats.streak++;
-      const b=stats.best[level];
-      if(b==null || secs<b) stats.best[level]=secs;
-    } else stats.streak=0;
-    store.set('stats',stats);
-    setMsg(`24! Solved in ${fmtTime(secs)}${clean?'':' (with help)'}`,'good');
+      s.streak++;
+      const b=s.best[level];
+      if(b==null || secs<b) s.best[level]=secs;
+    } else s.streak=0;
+    saveStats();
+    const prefix = mode==='var' ? `24 on both! ? = ${xVal}. ` : '24! ';
+    setMsg(`${prefix}Solved in ${fmtTime(secs)}${clean?'':' (with help)'}`,'good');
     $('next').textContent='Next card';
-    renderStats(); render(0);
+    renderStats(); render();
   }
+
+  // Variables: choose the value for ?
+  function chooseX(y){
+    if(done || xVal===y) return;
+    xVal=y; resetBoards(); setMsg(defaultMsg()); render();
+  }
+  (function buildPicker(){
+    const box=$('pks');
+    for(let y=1;y<=9;y++){
+      const b=document.createElement('button');
+      b.className='pk'; b.dataset.x=y; b.textContent=y;
+      b.onclick=()=>chooseX(y);
+      box.appendChild(b);
+    }
+  })();
 
   document.querySelectorAll('.op').forEach(o=>o.onclick=()=>{
     if(done) return;
-    if(selIdx===null){ setMsg('Pick a number first'); return; }
+    if(sel===null){ setMsg('Pick a number first'); return; }
     selOp = selOp===o.dataset.op ? null : o.dataset.op;
     render();
   });
 
-  $('undo').onclick=()=>{ if(!history.length||done) return; items=history.pop().items; selIdx=null; selOp=null; setMsg('Make 24'); render(); };
-  $('reset').onclick=()=>{ if(done) return; resetBoard(); setMsg('Make 24'); render(); };
-  $('skip').onclick=()=>{ if(!done){ stats.streak=0; store.set('stats',stats); renderStats(); } newCard(); };
+  $('undo').onclick=()=>{
+    if(!history.length||done) return;
+    const h=history.pop();
+    boards[h.b].items=h.items; boards[h.b].xLeft=h.xLeft; boards[h.b].solved=false;
+    sel=null; selOp=null; setMsg(defaultMsg()); render();
+  };
+  $('reset').onclick=()=>{ if(done) return; resetBoards(); setMsg(defaultMsg()); render(); };
+  $('skip').onclick=()=>{ if(!done){ st().streak=0; saveStats(); renderStats(); } newCard(); };
   $('next').onclick=newCard;
   $('hint').onclick=()=>{
     if(done) return;
     clean=false;
-    const sol=card.sols[0];
-    hintsShown=Math.min(hintsShown+1, sol.s.length);
+    hintsShown=Math.min(hintsShown+1, hintList.length);
     const box=$('hintBox'); box.className='hint show';
-    box.textContent='Hint:\n'+sol.s.slice(0,hintsShown).join('\n')+(hintsShown<sol.s.length?'\n...':'');
+    box.textContent = mode==='var'
+      ? 'Hint:\n'+hintList.slice(0,hintsShown).join('\n\n')
+      : 'Hint:\n'+hintList[hintsShown-1];
   };
   $('reveal').onclick=()=>{
     if(done) return;
     clean=false; done=true; clearInterval(timer);
-    stats.streak=0; store.set('stats',stats); renderStats();
+    st().streak=0; saveStats(); renderStats();
     const box=$('hintBox'); box.className='hint show';
-    box.textContent='One solution:\n'+card.sols[0].d+' = 24';
+    if(mode==='var'){
+      box.textContent=`? = ${card.x}\nLeft: ${card.solsA[0].d} = 24\nRight: ${card.solsB[0].d} = 24`;
+      xVal=card.x; resetBoards();
+    } else box.textContent='One solution:\n'+card.sols[0].d+' = 24';
     setMsg('Answer shown','info');
     $('next').textContent='Next card';
     render();
   };
   $('level').onchange=e=>{ level=e.target.value; store.set('level',level); seen.clear(); renderStats(); newCard(); };
+  document.querySelectorAll('#seg button').forEach(b=>b.onclick=()=>{
+    if(b.dataset.mode===mode) return;
+    mode=b.dataset.mode; store.set('mode',mode); seen.clear();
+    applyModeUI(); renderStats(); newCard();
+  });
 
+  applyModeUI();
   renderStats();
   newCard();
 })();
