@@ -77,6 +77,15 @@ select{background:var(--panel);border:1px solid var(--line);border-radius:10px;p
 .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
 .hint{background:var(--panel);border:1px dashed var(--line);border-radius:12px;padding:10px 12px;color:var(--muted);font-size:.95rem;display:none;white-space:pre-line}
 .hint.show{display:block}
+.hdr-r{display:flex;gap:8px;align-items:center}
+.snd{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:7px 9px;cursor:pointer;display:flex;align-items:center;color:var(--muted)}
+.msg.pop{animation:msgpop .45s}
+@keyframes msgpop{0%{transform:scale(.8)}55%{transform:scale(1.1)}100%{transform:scale(1)}}
+.challenge{display:none;background:var(--card-sel);border:1px solid var(--accent);border-radius:14px;padding:12px;text-align:center}
+.ch-title{font-weight:700;margin-bottom:10px}
+.ch-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.ch-row .btn{padding:9px 12px}
+#confetti{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:50;display:none}
 footer{text-align:center;color:var(--muted);font-size:.78rem}
 </style>
 </head>
@@ -84,12 +93,16 @@ footer{text-align:center;color:var(--muted);font-size:.78rem}
 <main>
   <header>
     <h1>Victoria's 24Game</h1>
-    <select id="level" aria-label="Difficulty">
-      <option value="easy">Easy</option>
-      <option value="medium" selected>Medium</option>
-      <option value="hard">Hard</option>
-    </select>
+    <div class="hdr-r">
+      <button class="snd" id="snd" aria-label="Sound on"></button>
+      <select id="level" aria-label="Difficulty">
+        <option value="easy">Easy</option>
+        <option value="medium" selected>Medium</option>
+        <option value="hard">Hard</option>
+      </select>
+    </div>
   </header>
+  <canvas id="confetti" aria-hidden="true"></canvas>
 
   <div class="seg" id="seg" role="tablist" aria-label="Game mode">
     <button data-mode="classic" class="on">Classic</button>
@@ -124,6 +137,7 @@ footer{text-align:center;color:var(--muted);font-size:.78rem}
       <button class="op" data-op="/" aria-label="divide">÷</button>
     </div>
     <div class="msg info" id="msg" aria-live="polite"></div>
+    <div class="challenge" id="challenge"></div>
     <div class="row">
       <button class="btn" id="undo">Undo</button>
       <button class="btn" id="reset">Reset</button>
@@ -319,7 +333,120 @@ if (typeof document !== 'undefined') (function(){
     $('sBest').textContent = b==null ? '-' : fmtTime(b);
   }
   function tick(){ $('sTime').textContent = fmtTime(Math.floor((Date.now()-startT)/1000)); }
-  function setMsg(t,cls){ const m=$('msg'); m.textContent=t; m.className='msg '+(cls||'info'); }
+  function setMsg(t,cls,pop){
+    const m=$('msg'); m.textContent=t; m.className='msg '+(cls||'info');
+    if(pop){ void m.offsetWidth; m.classList.add('pop'); }
+  }
+
+  // ---- Encouragement messages ----
+  const WIN_MSGS=['Good job!','Nice work!','You got it!','Great thinking!','Excellent!','Way to go!','Math whiz!','Spot on!'];
+  const HELP_MSGS=['Nice finish!','You figured it out!','Good job sticking with it!'];
+  const TRY_MSGS=['Not quite, try again!','So close! Give it another go.','Almost there, keep trying!','Good effort. Try a different way!','Hang in there. Undo and try again.'];
+  const lastPick={};
+  function pickMsg(key,list){
+    let m,t=0;
+    do{ m=list[Math.floor(Math.random()*list.length)]; } while(m===lastPick[key] && list.length>1 && ++t<20);
+    lastPick[key]=m; return m;
+  }
+  function streakMsg(n){
+    if(n===3) return "3 in a row, you're on fire!";
+    if(n===5) return '5 in a row! Amazing!';
+    if(n===10) return '10 in a row! Unstoppable!';
+    return `${n} in a row! Incredible!`;
+  }
+  const isMilestone = n => n===3 || n%5===0;
+
+  // ---- Sound (synthesized, no files) ----
+  let soundOn = store.get('sound', true), actx = null;
+  function audio(){
+    try{
+      if(!actx){ const C=window.AudioContext||window.webkitAudioContext; if(!C) return null; actx=new C(); }
+      if(actx.state==='suspended') actx.resume();
+      return actx;
+    }catch(e){ return null; }
+  }
+  function tone(freq,start,dur,type,gain,slideTo){
+    const a=audio(); if(!a) return;
+    const t0=a.currentTime+start, o=a.createOscillator(), g=a.createGain();
+    o.type=type||'sine';
+    o.frequency.setValueAtTime(freq,t0);
+    if(slideTo) o.frequency.exponentialRampToValueAtTime(slideTo,t0+dur);
+    g.gain.setValueAtTime(0.0001,t0);
+    g.gain.exponentialRampToValueAtTime(gain||.15,t0+.02);
+    g.gain.exponentialRampToValueAtTime(0.0001,t0+dur);
+    o.connect(g); g.connect(a.destination); o.start(t0); o.stop(t0+dur+.05);
+  }
+  function sfx(kind){
+    if(!soundOn) return;
+    try{
+      if(kind==='win'){ tone(659,0,.18); tone(880,.12,.28); }
+      else if(kind==='big'){ [523,659,784,1047].forEach((f,i)=>tone(f,i*.11,.3,'triangle',.18)); tone(1319,.5,.5,'triangle',.18); }
+      else if(kind==='try'){ tone(300,0,.25,'sine',.12,200); }
+    }catch(e){}
+  }
+  const SVG='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">';
+  const ICON_ON = SVG+'<path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>';
+  const ICON_OFF = SVG+'<path d="M11 5 6 9H3v6h3l5 4z"/><path d="m16 9 6 6M22 9l-6 6"/></svg>';
+  function renderSnd(){ $('snd').innerHTML = soundOn?ICON_ON:ICON_OFF; $('snd').setAttribute('aria-label', soundOn?'Sound on':'Sound off'); }
+  $('snd').onclick=()=>{ soundOn=!soundOn; store.set('sound',soundOn); renderSnd(); sfx('win'); };
+  renderSnd();
+
+  // ---- Confetti (canvas, ~2 seconds) ----
+  const reduceMotion = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+  function confetti(){
+    if(reduceMotion) return;
+    try{
+      const cv=$('confetti'), ctx=cv.getContext('2d');
+      const dpr=window.devicePixelRatio||1, W=cv.width=innerWidth*dpr, H=cv.height=innerHeight*dpr;
+      cv.style.display='block';
+      const colors=['#2f6fed','#1e9e5a','#f5b700','#e8553d','#a14df0','#16b8c9'];
+      const P=Array.from({length:140},()=>({
+        x:W/2+(Math.random()-.5)*W*.3, y:H*.35,
+        vx:(Math.random()-.5)*16*dpr, vy:(-Math.random()*14-4)*dpr,
+        s:(4+Math.random()*6)*dpr, r:Math.random()*6.28, vr:(Math.random()-.5)*.4,
+        c:colors[Math.floor(Math.random()*colors.length)]
+      }));
+      const t0=performance.now();
+      (function frame(now){
+        const t=now-t0; ctx.clearRect(0,0,W,H);
+        P.forEach(p=>{
+          p.vy+=.45*dpr; p.x+=p.vx; p.y+=p.vy; p.r+=p.vr;
+          ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.r);
+          ctx.fillStyle=p.c; ctx.globalAlpha=Math.max(0,1-t/2200);
+          ctx.fillRect(-p.s/2,-p.s/2,p.s,p.s*.6); ctx.restore();
+        });
+        if(t<2200) requestAnimationFrame(frame);
+        else { ctx.clearRect(0,0,W,H); cv.style.display='none'; }
+      })(t0);
+    }catch(e){}
+  }
+
+  // ---- Streak challenge prompt ----
+  const MODE_LABEL={classic:'Classic',var:'Variables',neg:'Negatives'};
+  const cap = s => s[0].toUpperCase()+s.slice(1);
+  function hideChallenge(){ const c=$('challenge'); c.style.display='none'; c.innerHTML=''; }
+  function showChallenge(n){
+    const c=$('challenge'); c.innerHTML='';
+    const t=document.createElement('div'); t.className='ch-title'; t.textContent=`${n} in a row! Ready for a challenge?`; c.appendChild(t);
+    const row=document.createElement('div'); row.className='ch-row'; c.appendChild(row);
+    const add=(label,fn)=>{
+      const b=document.createElement('button'); b.className='btn'; b.textContent=label;
+      b.onclick=()=>{ hideChallenge(); if(fn) fn(); };
+      row.appendChild(b);
+    };
+    const order=['easy','medium','hard'], i=order.indexOf(level);
+    if(i<2) add('Harder level ('+cap(order[i+1])+')', ()=>setLevel(order[i+1]));
+    ['classic','var','neg'].filter(m=>m!==mode).forEach(m=>add('Try '+MODE_LABEL[m], ()=>setMode(m)));
+    add('Keep going');
+    c.style.display='block';
+  }
+  function setLevel(l){
+    level=l; $('level').value=l; store.set('level',level); seen.clear(); renderStats(); newCard();
+  }
+  function setMode(m){
+    if(m===mode) return;
+    mode=m; store.set('mode',mode); seen.clear(); applyModeUI(); renderStats(); newCard();
+  }
   const defaultMsg = () => mode==='var' ? (xVal==null ? 'Pick a value for ?' : 'Make 24 on both wheels') : 'Make 24';
 
   function applyModeUI(){
@@ -332,6 +459,7 @@ if (typeof document !== 'undefined') (function(){
   }
 
   function newCard(){
+    hideChallenge();
     const needBuild = mode==='var' && !vpools[VLEVELS[level].max];
     if(needBuild){ setMsg('Building cards...'); setTimeout(doNew,30); } else doNew();
   }
@@ -483,11 +611,13 @@ if (typeof document !== 'undefined') (function(){
       if(v[0]===24 && v[1]===1){
         bd.solved=true;
         if(boards.every(t=>t.solved)){ render({b,i:0}); return win(); }
-        setMsg(`${side} done. Now the other wheel.`,'good');
+        setMsg(`${side} done, nice! Now the other wheel.`,'good');
       } else {
+        const tm=pickMsg('try',TRY_MSGS);
         setMsg(mode==='var'
-          ? `${side} makes ${fmt(v)}, not 24. Undo, or try a different ?`
-          : `That makes ${fmt(v)}, not 24. Undo or reset.`,'bad');
+          ? `${tm} The ${side.toLowerCase()} makes ${fmt(v)}, not 24.`
+          : `${tm} That makes ${fmt(v)}.`,'bad');
+        sfx('try');
       }
     } else setMsg(defaultMsg());
     render({b,i:bd.items.length-1});
@@ -498,16 +628,28 @@ if (typeof document !== 'undefined') (function(){
     const secs=Math.floor((Date.now()-startT)/1000);
     const s=st();
     s.solved++;
+    let newBest=false;
     if(clean){
       s.streak++;
       const b=s.best[level];
-      if(b==null || secs<b) s.best[level]=secs;
+      if(b==null || secs<b){ if(b!=null) newBest=true; s.best[level]=secs; }
     } else s.streak=0;
     saveStats();
-    const prefix = mode==='var' ? `24 on both! ? = ${xVal}. ` : '24! ';
-    setMsg(`${prefix}Solved in ${fmtTime(secs)}${clean?'':' (with help)'}`,'good');
+    const t=fmtTime(secs), extra = mode==='var' ? ` ? = ${xVal}.` : '';
+    let text, big=false;
+    if(!clean) text = `${pickMsg('help',HELP_MSGS)}${extra} Solved in ${t} (with help)`;
+    else {
+      const milestone=isMilestone(s.streak);
+      text = (milestone ? streakMsg(s.streak) : pickMsg('win',WIN_MSGS)) + `${extra} Solved in ${t}`;
+      if(newBest) text += '. New best time!';
+      big = milestone || newBest;
+    }
+    setMsg(text,'good',true);
+    sfx(big?'big':'win');
+    if(big) confetti();
     $('next').textContent='Next card';
     renderStats(); render();
+    if(clean && s.streak%5===0) showChallenge(s.streak);
   }
 
   // Variables: choose the value for ?
@@ -563,12 +705,8 @@ if (typeof document !== 'undefined') (function(){
     $('next').textContent='Next card';
     render();
   };
-  $('level').onchange=e=>{ level=e.target.value; store.set('level',level); seen.clear(); renderStats(); newCard(); };
-  document.querySelectorAll('#seg button').forEach(b=>b.onclick=()=>{
-    if(b.dataset.mode===mode) return;
-    mode=b.dataset.mode; store.set('mode',mode); seen.clear();
-    applyModeUI(); renderStats(); newCard();
-  });
+  $('level').onchange=e=>setLevel(e.target.value);
+  document.querySelectorAll('#seg button').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
 
   applyModeUI();
   renderStats();
