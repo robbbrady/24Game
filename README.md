@@ -4,6 +4,12 @@ A free math puzzle game that runs in any web browser on a computer or phone. No 
 
 **[Play it here](https://robbbrady.github.io/24Game/)**
 
+Or scan with your phone:
+
+<img src="qr.png" alt="QR code linking to Victoria's 24Game" width="200">
+
+A print-ready vector version is in [`qr.svg`](qr.svg).
+
 ## How to play
 
 You get four numbers. Combine all four with + − × ÷, using each number once, to make exactly 24. Tap a number, tap an operator, then tap another number. The result replaces both, and you keep going until one number is left.

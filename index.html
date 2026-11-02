@@ -86,6 +86,16 @@ select{background:var(--panel);border:1px solid var(--line);border-radius:10px;p
 .ch-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
 .ch-row .btn{padding:9px 12px}
 #confetti{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:50;display:none}
+.share-link{display:block;margin:8px auto 0;background:none;border:0;color:var(--accent);font-size:.85rem;cursor:pointer;text-decoration:underline;padding:6px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:16px;z-index:60}
+.modal.open{display:flex}
+.dlg{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;max-width:340px;width:100%;text-align:center;display:flex;flex-direction:column;gap:12px}
+.dlg h2{margin:0;font-size:1.15rem}
+.qrbox{background:#fff;border-radius:12px;padding:12px;width:min(240px,70vw);margin:0 auto;line-height:0}
+.qrbox svg{width:100%;height:auto;display:block}
+.dlg .url{font-size:.8rem;color:var(--muted);word-break:break-all}
+.dlg .row2{display:flex;gap:8px}
+.dlg .row2 .btn{flex:1}
 footer{text-align:center;color:var(--muted);font-size:.78rem}
 </style>
 </head>
@@ -152,6 +162,19 @@ footer{text-align:center;color:var(--muted);font-size:.78rem}
   </section>
 
   <footer id="foot"></footer>
+  <button class="share-link" id="shareBtn">Share this game (QR code)</button>
+
+  <div class="modal" id="shareDlg" role="dialog" aria-modal="true" aria-labelledby="shareTitle">
+    <div class="dlg">
+      <h2 id="shareTitle">Scan to play</h2>
+      <div class="qrbox"><svg viewBox="-4 -4 37 37" shape-rendering="crispEdges" role="img" aria-label="QR code linking to the game"><rect x="-4" y="-4" width="37" height="37" fill="#fff"/><path fill="#000" d="M0 0h7v1h-7zM9 0h1v1h-1zM11 0h1v1h-1zM13 0h2v1h-2zM16 0h1v1h-1zM19 0h1v1h-1zM22 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM8 1h2v1h-2zM14 1h2v1h-2zM17 1h3v1h-3zM22 1h1v1h-1zM28 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM9 2h2v1h-2zM13 2h2v1h-2zM16 2h1v1h-1zM20 2h1v1h-1zM22 2h1v1h-1zM24 2h3v1h-3zM28 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM9 3h3v1h-3zM13 3h3v1h-3zM18 3h1v1h-1zM22 3h1v1h-1zM24 3h3v1h-3zM28 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM8 4h2v1h-2zM11 4h1v1h-1zM14 4h1v1h-1zM16 4h1v1h-1zM18 4h2v1h-2zM22 4h1v1h-1zM24 4h3v1h-3zM28 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM10 5h1v1h-1zM12 5h2v1h-2zM15 5h2v1h-2zM19 5h1v1h-1zM22 5h1v1h-1zM28 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h7v1h-7zM12 7h3v1h-3zM16 7h2v1h-2zM19 7h2v1h-2zM0 8h1v1h-1zM2 8h1v1h-1zM4 8h1v1h-1zM6 8h1v1h-1zM9 8h1v1h-1zM11 8h1v1h-1zM14 8h5v1h-5zM24 8h1v1h-1zM27 8h1v1h-1zM0 9h2v1h-2zM5 9h1v1h-1zM7 9h5v1h-5zM14 9h1v1h-1zM20 9h3v1h-3zM25 9h1v1h-1zM28 9h1v1h-1zM0 10h1v1h-1zM3 10h2v1h-2zM6 10h5v1h-5zM12 10h2v1h-2zM17 10h1v1h-1zM22 10h1v1h-1zM26 10h3v1h-3zM3 11h1v1h-1zM9 11h2v1h-2zM12 11h1v1h-1zM15 11h3v1h-3zM19 11h1v1h-1zM21 11h3v1h-3zM27 11h1v1h-1zM1 12h6v1h-6zM8 12h1v1h-1zM16 12h2v1h-2zM19 12h4v1h-4zM25 12h1v1h-1zM27 12h2v1h-2zM1 13h2v1h-2zM4 13h2v1h-2zM8 13h1v1h-1zM10 13h2v1h-2zM13 13h1v1h-1zM16 13h1v1h-1zM20 13h1v1h-1zM22 13h1v1h-1zM25 13h1v1h-1zM28 13h1v1h-1zM0 14h1v1h-1zM2 14h2v1h-2zM6 14h2v1h-2zM9 14h2v1h-2zM14 14h1v1h-1zM18 14h1v1h-1zM22 14h1v1h-1zM25 14h1v1h-1zM27 14h2v1h-2zM0 15h2v1h-2zM4 15h2v1h-2zM9 15h10v1h-10zM20 15h4v1h-4zM25 15h1v1h-1zM27 15h1v1h-1zM4 16h3v1h-3zM8 16h3v1h-3zM14 16h4v1h-4zM20 16h3v1h-3zM25 16h1v1h-1zM27 16h2v1h-2zM1 17h1v1h-1zM5 17h1v1h-1zM10 17h3v1h-3zM14 17h1v1h-1zM16 17h1v1h-1zM20 17h3v1h-3zM25 17h2v1h-2zM28 17h1v1h-1zM0 18h1v1h-1zM2 18h6v1h-6zM12 18h2v1h-2zM17 18h1v1h-1zM20 18h1v1h-1zM22 18h2v1h-2zM27 18h2v1h-2zM1 19h3v1h-3zM7 19h1v1h-1zM9 19h2v1h-2zM15 19h1v1h-1zM17 19h2v1h-2zM20 19h1v1h-1zM24 19h2v1h-2zM27 19h1v1h-1zM0 20h1v1h-1zM4 20h1v1h-1zM6 20h1v1h-1zM9 20h1v1h-1zM11 20h1v1h-1zM16 20h9v1h-9zM8 21h1v1h-1zM12 21h2v1h-2zM16 21h1v1h-1zM19 21h2v1h-2zM24 21h1v1h-1zM26 21h3v1h-3zM0 22h7v1h-7zM12 22h1v1h-1zM14 22h1v1h-1zM17 22h1v1h-1zM19 22h2v1h-2zM22 22h1v1h-1zM24 22h2v1h-2zM27 22h2v1h-2zM0 23h1v1h-1zM6 23h1v1h-1zM9 23h1v1h-1zM11 23h4v1h-4zM16 23h5v1h-5zM24 23h2v1h-2zM28 23h1v1h-1zM0 24h1v1h-1zM2 24h3v1h-3zM6 24h1v1h-1zM8 24h2v1h-2zM11 24h2v1h-2zM14 24h1v1h-1zM16 24h3v1h-3zM20 24h5v1h-5zM28 24h1v1h-1zM0 25h1v1h-1zM2 25h3v1h-3zM6 25h1v1h-1zM9 25h1v1h-1zM12 25h7v1h-7zM23 25h2v1h-2zM26 25h3v1h-3zM0 26h1v1h-1zM2 26h3v1h-3zM6 26h1v1h-1zM8 26h1v1h-1zM14 26h1v1h-1zM16 26h3v1h-3zM23 26h3v1h-3zM28 26h1v1h-1zM0 27h1v1h-1zM6 27h1v1h-1zM12 27h6v1h-6zM20 27h1v1h-1zM23 27h2v1h-2zM27 27h1v1h-1zM0 28h7v1h-7zM8 28h1v1h-1zM10 28h1v1h-1zM12 28h1v1h-1zM17 28h4v1h-4zM22 28h1v1h-1zM24 28h2v1h-2zM27 28h2v1h-2z"/></svg></div>
+      <div class="url" id="shareUrl"></div>
+      <div class="row2">
+        <button class="btn" id="copyLink">Copy link</button>
+        <button class="btn primary" id="closeShare">Close</button>
+      </div>
+    </div>
+  </div>
 </main>
 
 <script>
@@ -707,6 +730,28 @@ if (typeof document !== 'undefined') (function(){
   };
   $('level').onchange=e=>setLevel(e.target.value);
   document.querySelectorAll('#seg button').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
+
+  // ---- Share dialog (QR code) ----
+  const SITE='https://robbbrady.github.io/24Game/';
+  $('shareUrl').textContent=SITE;
+  const dlg=$('shareDlg');
+  const openShare=()=>dlg.classList.add('open'), closeShare=()=>dlg.classList.remove('open');
+  $('shareBtn').onclick=openShare;
+  $('closeShare').onclick=closeShare;
+  dlg.onclick=e=>{ if(e.target===dlg) closeShare(); };
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeShare(); });
+  $('copyLink').onclick=async()=>{
+    const b=$('copyLink');
+    try{
+      if(navigator.share && /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)){
+        await navigator.share({title:"Victoria's 24Game", url:SITE}); return;
+      }
+      await navigator.clipboard.writeText(SITE);
+      b.textContent='Copied!';
+    }catch(e){ if(e&&e.name==='AbortError') return; b.textContent='Copy failed'; }
+    setTimeout(()=>{ b.textContent=navigator.share&&/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)?'Share link':'Copy link'; },1500);
+  };
+  if(navigator.share && /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)) $('copyLink').textContent='Share link';
 
   applyModeUI();
   renderStats();
