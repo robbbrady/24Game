@@ -109,6 +109,7 @@ footer{text-align:center;color:var(--muted);font-size:.78rem}
         <option value="easy">Easy</option>
         <option value="medium" selected>Medium</option>
         <option value="hard">Hard</option>
+        <option value="xhard">Extra Hard</option>
       </select>
     </div>
   </header>
@@ -225,15 +226,19 @@ function solve(nums){
   return [...found.values()].map(x=>({d:x.d.replace(/^\((.*)\)$/,'$1'), s:x.s}));
 }
 // Difficulty is the number of distinct ways to reach 24: fewer ways = harder.
+// dbl: minimum count of double-digit numbers on the card.
 const LEVELS = {
   easy:   {max:9,  min:8, hi:999},
   medium: {max:9,  min:3, hi:7},
-  hard:   {max:13, min:1, hi:2}
+  hard:   {max:13, min:1, hi:2},
+  xhard:  {max:25, min:1, hi:2, dbl:2}
 };
+const dbls = nums => nums.filter(n=>Math.abs(n)>=10).length;
 function generate(level, seen){
   const L = LEVELS[level];
   for(let tries=0; tries<5000; tries++){
     const nums = Array.from({length:4}, ()=>1+Math.floor(Math.random()*L.max));
+    if(L.dbl && dbls(nums)<L.dbl) continue;
     const key = [...nums].sort((a,b)=>a-b).join(',');
     if(seen && seen.has(key)) continue;
     const sols = solve(nums);
@@ -248,7 +253,8 @@ function generate(level, seen){
 const NLEVELS = {
   easy:   {R:5,  min:8, hi:999},
   medium: {R:9,  min:3, hi:12},
-  hard:   {R:13, min:1, hi:2}
+  hard:   {R:13, min:1, hi:2},
+  xhard:  {R:25, min:1, hi:2, dbl:2}
 };
 function generateNeg(level, seen){
   const L = NLEVELS[level];
@@ -256,6 +262,7 @@ function generateNeg(level, seen){
   for(let tries=0; tries<5000; tries++){
     const nums = [rn(),rn(),rn(),rn()];
     if(!nums.some(n=>n<0)) continue;
+    if(L.dbl && dbls(nums)<L.dbl) continue;
     const key = [...nums].sort((a,b)=>a-b).join(',');
     if(seen && seen.has(key)) continue;
     const sols = solve(nums);
@@ -271,30 +278,57 @@ function generateNeg(level, seen){
 // ==VARIABLES==
 // Variables mode: two sets of 3 numbers share one unknown "?" (1-9).
 // Exactly one value of ? makes 24 on both sets.
-function can24(items){
-  if(items.length===1) return items[0][0]===24 && items[0][1]===1;
-  for(let i=0;i<items.length;i++) for(let j=i+1;j<items.length;j++){
-    const a=items[i], b=items[j], rest=items.filter((_,k)=>k!==i&&k!==j);
-    for(const op of ['+','-','*','/']){
-      const ps=(op==='+'||op==='*')?[[a,b]]:[[a,b],[b,a]];
-      for(const [x,y] of ps){ const v=apply(op,x,y); if(v && can24([...rest,v])) return true; }
-    }
-  }
-  return false;
-}
 const VLEVELS = {
   easy:   {max:9,  lo:5, hi:999},
   medium: {max:13, lo:2, hi:4},
-  hard:   {max:13, lo:1, hi:1}
+  hard:   {max:13, lo:1, hi:1},
+  xhard:  {max:25, lo:1, hi:1, dbl:1}
 };
 const vpools = {};
+// Fast 24 check for building big pools: memoized sets of values reachable from 1-3 numbers,
+// then each split of the four numbers looks up the value its other half needs.
+const fk = v => v[0]+'/'+v[1];
+const reachMemo = new Map();
+function reach(ns){
+  const k=ns.join(',');
+  if(reachMemo.has(k)) return reachMemo.get(k);
+  const out=new Map();
+  if(ns.length===1) out.set(fk([ns[0],1]),[ns[0],1]);
+  else for(let i=0;i<ns.length;i++){
+    if(ns.length===2 && i) break;
+    const A=reach([ns[i]]), B=reach(ns.filter((_,j)=>j!==i));
+    for(const a of A.values()) for(const b of B.values()) for(const op of ['+','-','*','/'])
+      for(const [x,y] of [[a,b],[b,a]]){ const v=apply(op,x,y); if(v) out.set(fk(v),v); }
+  }
+  reachMemo.set(k,out);
+  return out;
+}
+const T24=[24,1];
+// Values v that combine with u (either order, any op) to give 24.
+function needs(u){
+  const t=[apply('-',T24,u), apply('+',T24,u), apply('-',u,T24)];
+  if(u[0]!==0) t.push(apply('/',T24,u), apply('*',T24,u), apply('/',u,T24));
+  return t;
+}
+function fast24(n4){
+  const ns=[...n4].sort((a,b)=>a-b);
+  for(let i=0;i<4;i++){
+    const T=reach(ns.filter((_,j)=>j!==i));
+    if(needs([ns[i],1]).some(v=>T.has(fk(v)))) return true;
+  }
+  for(const [i,j,k,l] of [[0,1,2,3],[0,2,1,3],[0,3,1,2]]){
+    const P=reach([ns[i],ns[j]]), Q=reach([ns[k],ns[l]]);
+    for(const p of P.values()) if(needs(p).some(v=>Q.has(fk(v)))) return true;
+  }
+  return false;
+}
 // Every sorted triple 1..max with the list of ? values (1-9) that can make 24; kept if 2+ values work.
 function vpool(max){
   if(vpools[max]) return vpools[max];
   const P=[];
   for(let a=1;a<=max;a++) for(let b=a;b<=max;b++) for(let c=b;c<=max;c++){
     const vs=[];
-    for(let y=1;y<=9;y++) if(can24([a,b,c,y].map(n=>[n,1]))) vs.push(y);
+    for(let y=1;y<=9;y++) if(fast24([a,b,c,y])) vs.push(y);
     if(vs.length>=2) P.push({s:[a,b,c], vs, cnt:{}});
   }
   return vpools[max]=P;
@@ -302,11 +336,13 @@ function vpool(max){
 const vcnt=(p,x)=>p.cnt[x] ?? (p.cnt[x]=solve([...p.s,x]).length);
 const pickOne=a=>a[Math.floor(Math.random()*a.length)];
 const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
-function generateVar(level, seen){
+// prevX: the previous card's ?, never reused back to back.
+function generateVar(level, seen, prevX){
   const L=VLEVELS[level], P=vpool(L.max);
   for(let t=0;t<4000;t++){
     const x=1+Math.floor(Math.random()*9);
-    const cand=P.filter(p=>p.vs.includes(x));
+    if(x===prevX) continue;
+    const cand=P.filter(p=>p.vs.includes(x) && !(L.dbl && dbls(p.s)<L.dbl));
     if(cand.length<2) continue;
     let A=pickOne(cand);
     const Bs=cand.filter(p=>p!==A && p.vs.filter(v=>A.vs.includes(v)).length===1);
@@ -331,7 +367,7 @@ if (typeof document !== 'undefined') (function(){
     get(k,d){ try{ const v=localStorage.getItem('g24_'+k); return v===null?d:JSON.parse(v);}catch(e){return d} },
     set(k,v){ try{ localStorage.setItem('g24_'+k, JSON.stringify(v)); }catch(e){} }
   };
-  const blank = () => ({solved:0, streak:0, best:{easy:null,medium:null,hard:null}});
+  const blank = () => ({solved:0, streak:0, best:{easy:null,medium:null,hard:null,xhard:null}});
 
   let mode  = store.get('mode','classic');
   let level = store.get('level','medium');
@@ -446,7 +482,7 @@ if (typeof document !== 'undefined') (function(){
 
   // ---- Streak challenge prompt ----
   const MODE_LABEL={classic:'Classic',var:'Variables',neg:'Negatives'};
-  const cap = s => s[0].toUpperCase()+s.slice(1);
+  const LEVEL_LABEL={easy:'Easy',medium:'Medium',hard:'Hard',xhard:'Extra Hard'};
   function hideChallenge(){ const c=$('challenge'); c.style.display='none'; c.innerHTML=''; }
   function showChallenge(n){
     const c=$('challenge'); c.innerHTML='';
@@ -457,8 +493,8 @@ if (typeof document !== 'undefined') (function(){
       b.onclick=()=>{ hideChallenge(); if(fn) fn(); };
       row.appendChild(b);
     };
-    const order=['easy','medium','hard'], i=order.indexOf(level);
-    if(i<2) add('Harder level ('+cap(order[i+1])+')', ()=>setLevel(order[i+1]));
+    const order=['easy','medium','hard','xhard'], i=order.indexOf(level);
+    if(i<order.length-1) add('Harder level ('+LEVEL_LABEL[order[i+1]]+')', ()=>setLevel(order[i+1]));
     ['classic','var','neg'].filter(m=>m!==mode).forEach(m=>add('Try '+MODE_LABEL[m], ()=>setMode(m)));
     add('Keep going');
     c.style.display='block';
@@ -488,9 +524,12 @@ if (typeof document !== 'undefined') (function(){
   }
 
   function doNew(){
-    const c = mode==='var' ? generateVar(level, seen)
+    const gen = () => mode==='var' ? generateVar(level, seen, card && card.x)
             : mode==='neg' ? generateNeg(level, seen)
             : generate(level, seen);
+    let c = gen();
+    // Ran out of unseen cards (small pools like Variables easy): start the cycle over.
+    if(!c && seen.size){ seen.clear(); c = gen(); }
     if(!c){ setMsg('Could not generate a card, try again','bad'); return; }
     if(seen.size>400) seen.clear();
     card = c; xVal = null;

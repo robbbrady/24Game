@@ -20,7 +20,7 @@ You get four numbers. Combine all four with + − × ÷, using each number once,
 - **Variables:** Two sets of three numbers share one unknown value (1-9). Find the value that makes 24 on both sets, then prove it by building 24 on each.
 - **Negatives:** Classic play with whole numbers that can be negative.
 
-Each mode has Easy, Medium, and Hard levels. Difficulty is based on how many different ways a card can reach 24. Fewer ways means a harder card.
+Each mode has Easy, Medium, Hard, and Extra Hard levels. Extra Hard uses numbers up to 25 with more double digits. Difficulty is based on how many different ways a card can reach 24. Fewer ways means a harder card.
 
 ## Features
 
