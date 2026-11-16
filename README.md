@@ -25,9 +25,16 @@ Each mode has Easy, Medium, Hard, and Extra Hard levels. Extra Hard uses numbers
 ## Features
 
 - Unlimited cards, generated on the fly and always solvable
-- Hints, undo, reset, skip, and show answer
+- **Players:** the game asks who is playing, so several kids can share one iPad. Each player has their own stickers, best times, and theme. A new player picks a theme right after entering a name, and their newest stickers show beside their name. Names stay on the device; "Just play" needs no name and saves nothing
+- **Themes:** Classic, Space, Ocean, Jungle, Chalkboard, Arcade, and Volcano. Each clean solve adds one thing to your world; collect 24 to fill it. The screen also changes with difficulty: a band of color rises in the background and the board gains a brighter edge on harder levels
+- **Sticker book:** 30 stickers for milestones, math skills (fractions, going below zero, no ×), grit, exploring, and habits, including three secret ones
+- **Daily card:** one card a day, the same for everyone, with a board of every player's time on that device
+- **Find another way:** after a solve, the game shows how many ways the card has and invites you to find more
+- **Hints that teach:** first what to aim for, then which tiles to start with, then the next step, then the whole way. Hints work from the board as it is now and say when a path cannot reach 24
+- Your steps are shown as you go; tap a step to undo back to it. Undo, reset, and skip are always one tap away
+- Competition mode: draws a red frame, deals a new card, and turns off hints, undo, and skip so students can prove they solved it on their own. Starting over is allowed but counted. A summary shows the player, card, steps, time, and attempt number for a teacher to check or copy
 - Timer, streaks, and best times saved in your browser (nothing is sent anywhere)
-- Encouragement messages, sound, and confetti (sound can be turned off)
+- Encouragement messages, sound, and win effects (sound can be turned off in the menu)
 - Works offline once loaded
 
 ## Run it yourself

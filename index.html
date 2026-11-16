@@ -10,136 +10,284 @@
   --bg:#f4f6fa; --panel:#ffffff; --ink:#1b2a41; --muted:#64708a; --line:#d9dfeb;
   --card:#ffffff; --card-sel:#dbe9ff; --accent:#2f6fed; --accent-ink:#fff;
   --good:#1e9e5a; --bad:#d6453d; --op:#eef2fa; --op-sel:#2f6fed;
+  --font:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
 }
 @media (prefers-color-scheme:dark){
   :root{--bg:#111827; --panel:#1b2433; --ink:#e8edf6; --muted:#93a0b8; --line:#2c3850;
   --card:#243049; --card-sel:#27457a; --accent:#5b93ff; --accent-ink:#0b1220; --op:#26324a; --op-sel:#5b93ff;}
 }
+/* ---- Themes: each one is a full palette plus a drawn background (.scene) ---- */
+:root[data-theme="space"]{--bg:#080b22; --panel:#151c46; --ink:#eef1ff; --muted:#aab3dc; --line:#34408a;
+  --card:#222b62; --card-sel:#3d43a8; --accent:#ffd166; --accent-ink:#1c1500; --good:#5be3a0; --bad:#ff8a8a; --op:#1c2456; --op-sel:#ffd166}
+:root[data-theme="ocean"]{--bg:#06476e; --panel:#0a4f77; --ink:#f0fbff; --muted:#b4dcec; --line:#2c86ad;
+  --card:#0f6792; --card-sel:#1883ad; --accent:#ffb347; --accent-ink:#2a1500; --good:#86f2b6; --bad:#ffc0b5; --op:#0c5a85; --op-sel:#ffb347}
+:root[data-theme="jungle"]{--bg:#cfe6b8; --panel:#f8fcf1; --ink:#1f3a1a; --muted:#4d6644; --line:#b3cf9c;
+  --card:#ffffff; --card-sel:#d3eeb4; --accent:#2e7d32; --accent-ink:#fff; --good:#1b8744; --bad:#c2402e; --op:#e5f3d4; --op-sel:#2e7d32}
+:root[data-theme="chalk"]{--bg:#20352b; --panel:#274236; --ink:#f6f3e6; --muted:#bccbbb; --line:#648070;
+  --card:#2d4a3d; --card-sel:#40705a; --accent:#ffe27a; --accent-ink:#2b2400; --good:#a4f2b8; --bad:#ffada4; --op:#2a4638; --op-sel:#ffe27a;
+  --font:"Chalkboard SE","Chalkboard","Marker Felt","Comic Sans MS",system-ui,sans-serif}
+:root[data-theme="arcade"]{--bg:#0a0a14; --panel:#12122c; --ink:#f2f2ff; --muted:#a3a3d4; --line:#3d3285;
+  --card:#17173c; --card-sel:#2d2175; --accent:#00e5ff; --accent-ink:#00161a; --good:#39ff88; --bad:#ff6b6b; --op:#15153a; --op-sel:#00e5ff}
+:root[data-theme="volcano"]{--bg:#17110e; --panel:#2a1c16; --ink:#fff3e6; --muted:#d6b095; --line:#63402c;
+  --card:#3a251b; --card-sel:#7d3614; --accent:#ff8a1f; --accent-ink:#1f0c00; --good:#93e37f; --bad:#ff9a8c; --op:#33211a; --op-sel:#ff8a1f}
+.scene{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:var(--bg)}
+:root[data-theme="space"] .scene{background:
+  radial-gradient(2px 2px at 20px 30px,#fff,transparent) 0 0/210px 210px,
+  radial-gradient(1.5px 1.5px at 95px 125px,#cfd8ff,transparent) 0 0/210px 210px,
+  radial-gradient(2.5px 2.5px at 160px 60px,#ffe9a8,transparent) 0 0/210px 210px,
+  radial-gradient(1.5px 1.5px at 60px 175px,#fff,transparent) 0 0/210px 210px,
+  radial-gradient(1.5px 1.5px at 185px 195px,#fff,transparent) 0 0/210px 210px,
+  radial-gradient(ellipse at 75% 8%,#3b2a80 0,transparent 55%),
+  radial-gradient(ellipse at 10% 90%,#12305e 0,transparent 50%),
+  linear-gradient(#0b1030,#060818)}
+:root[data-theme="ocean"] .scene{background:
+  radial-gradient(circle 9px at 30px 40px,transparent 6px,rgba(255,255,255,.28) 7px,transparent 9px) 0 0/170px 230px,
+  radial-gradient(circle 5px at 120px 150px,transparent 3px,rgba(255,255,255,.25) 4px,transparent 5px) 0 0/170px 230px,
+  radial-gradient(circle 13px at 90px 200px,transparent 10px,rgba(255,255,255,.18) 11px,transparent 13px) 0 0/260px 310px,
+  radial-gradient(ellipse at 50% -10%,rgba(255,255,255,.12) 0,transparent 55%),
+  linear-gradient(#0d6f9c,#06476e 60%,#042c47)}
+:root[data-theme="jungle"] .scene{background:
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Cpath d='M20 70Q45 20 95 32Q82 82 20 70Z' fill='%232e7d32' fill-opacity='.13'/%3E%3Cpath d='M100 135Q108 98 142 100Q140 132 100 135Z' fill='%231b5e20' fill-opacity='.1'/%3E%3C/svg%3E"),
+  linear-gradient(#e8f5da,#b9dc9c)}
+:root[data-theme="chalk"] .scene{background:
+  radial-gradient(ellipse at 28% 18%,rgba(255,255,255,.07),transparent 50%),
+  radial-gradient(ellipse at 82% 72%,rgba(255,255,255,.05),transparent 45%),
+  #20352b}
+:root[data-theme="arcade"] .scene{background:
+  linear-gradient(rgba(0,229,255,.13) 1px,transparent 1px) 0 0/32px 32px,
+  linear-gradient(90deg,rgba(0,229,255,.13) 1px,transparent 1px) 0 0/32px 32px,
+  radial-gradient(ellipse at 50% 100%,#3b0f6b 0,transparent 60%),
+  linear-gradient(#0a0a14,#120a26)}
+:root[data-theme="volcano"] .scene{background:
+  radial-gradient(ellipse at 50% 112%,#ff7a1f 0,#a32d08 24%,transparent 60%),
+  linear-gradient(#17110e,#2b1710)}
+:root[data-theme="space"] .num{background:radial-gradient(circle at 30% 22%,#313d86,var(--card) 70%)}
+:root[data-theme="arcade"] .num{font-family:ui-monospace,Menlo,Consolas,monospace;box-shadow:0 0 14px rgba(0,229,255,.22)}
+:root[data-theme="volcano"] .num{background:linear-gradient(#452c20,var(--card))}
+/* Difficulty changes the screen: a band of color rises from the bottom of the scene, and the board gains an accent edge */
+:root{--lvl-c:var(--card-sel)}
+:root[data-theme="space"]{--lvl-c:#4a2391}
+:root[data-theme="ocean"]{--lvl-c:#021a2b}
+:root[data-theme="jungle"]{--lvl-c:#7fb862}
+:root[data-theme="chalk"]{--lvl-c:#0f1c16}
+:root[data-theme="arcade"]{--lvl-c:#7a1fa0}
+:root[data-theme="volcano"]{--lvl-c:#c2330a}
+.scene::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,var(--lvl-c),transparent);transform-origin:bottom;transform:scaleY(0);opacity:0;transition:transform .6s,opacity .6s}
+:root[data-level="medium"] .scene::after{transform:scaleY(.4);opacity:.6}
+:root[data-level="hard"] .scene::after{transform:scaleY(.7);opacity:.8}
+:root[data-level="xhard"] .scene::after{transform:scaleY(1);opacity:1}
+:root[data-level="hard"] .board{border-color:var(--accent)}
+:root[data-level="xhard"] .board{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
+.deco{position:absolute;font-size:1.7rem;line-height:1;animation:pop .4s}
+/* Competition: a red frame instead of a background swap, so it works with every theme */
+:root.comp body::before{content:"";position:fixed;inset:0;border:7px solid var(--bad);pointer-events:none;z-index:40}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-body{min-height:100vh;display:flex;justify-content:center;padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom))}
-main{width:100%;max-width:520px;display:flex;flex-direction:column;gap:14px}
-header{display:flex;align-items:center;justify-content:space-between;gap:10px}
-h1{margin:0;font-size:1.4rem;letter-spacing:.5px}
-select,button{font:inherit;color:inherit}
-select{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font)}
+body{min-height:100vh;display:flex;justify-content:center;padding:max(14px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom))}
+main{position:relative;z-index:1;width:100%;max-width:520px;display:flex;flex-direction:column;gap:10px}
+header{display:flex;align-items:center;justify-content:space-between;gap:8px}
+h1{min-width:0;margin:0;font-size:1.15rem;letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+select,button,input{font:inherit;color:inherit}
+select{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 6px;max-width:100%}
+.bar{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:stretch}
 .seg{display:grid;grid-template-columns:repeat(3,1fr);background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:3px;gap:3px}
-.seg button{border:0;background:transparent;border-radius:9px;padding:9px 0;cursor:pointer;font-weight:600;color:var(--muted)}
+.seg button{border:0;background:transparent;border-radius:9px;padding:8px 0;cursor:pointer;font-weight:600;font-size:.9rem;color:var(--muted)}
 .seg button.on{background:var(--accent);color:var(--accent-ink)}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px 6px;text-align:center}
-.stat b{display:block;font-size:1.15rem;font-variant-numeric:tabular-nums}
-.stat span{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
-.board{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:14px}
+.seg button:disabled,select:disabled{opacity:.5}
+.stats{display:flex;justify-content:space-between;gap:8px;font-size:.85rem;color:var(--muted);padding:0 4px}
+.stats b{color:var(--ink);font-variant-numeric:tabular-nums}
+.trail{display:grid;grid-template-columns:repeat(24,1fr);text-align:center;font-size:clamp(.5rem,2.5vw,.85rem);line-height:1.2;padding:0 2px}
+.trail i{font-style:normal;color:var(--muted);opacity:.45}
+.trail i.on{opacity:1}
+.board{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:12px 14px 14px;display:flex;flex-direction:column;gap:12px}
+.bhead{display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:30px}
+.blabel{font-size:.8rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.target{font-weight:800;border:2px solid var(--line);border-radius:999px;padding:2px 14px;font-variant-numeric:tabular-nums;transition:background .2s,border-color .2s,color .2s}
+.target.ok{background:var(--good);border-color:var(--good);color:#fff}
+:root[data-theme] .target.ok{color:var(--panel)}
 .cards{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-.num{aspect-ratio:1.5/1;background:var(--card);border:2px solid var(--line);border-radius:16px;
+.num{aspect-ratio:1.6/1;background:var(--card);border:2px solid var(--line);border-radius:16px;
   font-size:clamp(2rem,10vw,3rem);font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;
   transition:transform .08s,border-color .15s,background .15s;font-variant-numeric:tabular-nums}
 .num:active{transform:scale(.96)}
 .num.sel{border-color:var(--accent);background:var(--card-sel)}
 .num.res{border-style:dashed}
 .num.frac{font-size:clamp(1.6rem,8vw,2.4rem)}
-.num.q{border-style:dashed;color:var(--muted)}
-.num.xv{border-color:var(--accent)}
+.num.win{border-color:var(--good);border-style:solid;color:var(--good)}
+.num.glow{border-color:var(--accent);animation:glow .7s infinite alternate}
+@keyframes glow{from{box-shadow:0 0 0 0 var(--accent)}to{box-shadow:0 0 0 5px var(--accent)}}
 .num.pop{animation:pop .25s}
 @keyframes pop{0%{transform:scale(.7)}60%{transform:scale(1.08)}100%{transform:scale(1)}}
 .num.shake{animation:shake .3s}
 @keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.num.ph{visibility:hidden;pointer-events:none}
+.ghost{position:fixed;z-index:30;margin:0;pointer-events:none;transition:transform .16s ease-in,opacity .16s ease-in}
 /* Variables mode */
-.picker{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
-.plabel{font-size:.8rem;color:var(--muted);text-align:center}
-.pks{display:grid;grid-template-columns:repeat(9,1fr);gap:4px}
-.pk{background:var(--op);border:1px solid var(--line);border-radius:10px;padding:10px 0;font-weight:700;cursor:pointer}
-.pk.on{background:var(--op-sel);color:var(--accent-ink);border-color:var(--op-sel)}
-.pk:disabled{opacity:.5;cursor:default}
-.wheels{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.wheels{display:grid;grid-template-columns:1fr 1fr;gap:10px;position:relative}
 .wheel{border:2px solid var(--line);border-radius:16px;padding:8px;position:relative}
 .wheel.ok{border-color:var(--good)}
 .wheel.ok::after{content:"\2713 24";position:absolute;top:-10px;right:10px;background:var(--good);color:#fff;font-size:.75rem;font-weight:700;padding:1px 8px;border-radius:10px}
 .wl{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;text-align:center;margin-bottom:6px}
-.wheels{position:relative}
 .bridge{--bw:calc(min(100vw,520px)*.21);position:absolute;left:calc(50% - var(--bw)/2);bottom:8px;width:var(--bw);
   aspect-ratio:1.2/1;z-index:2;border-radius:12px;font-size:clamp(1.4rem,7vw,2.2rem);box-shadow:0 4px 14px rgba(0,0,0,.22)}
 .bridge.set{border-color:var(--accent)}
 .bridge.dim{opacity:.45}
-.num.ph{visibility:hidden;pointer-events:none}
+.bridge.ask{border-style:dashed;color:var(--muted);animation:glow .9s infinite alternate}
 .cards.sm{gap:8px}
 .sm .num{aspect-ratio:1.2/1;border-radius:12px;font-size:clamp(1.4rem,7vw,2.2rem)}
 .sm .num.frac{font-size:clamp(1.1rem,5.5vw,1.7rem)}
+.xbtn{width:100%;margin-top:10px;font-weight:600}
+.xgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.xgrid button{aspect-ratio:1.3/1;font-size:1.8rem;font-weight:700;background:var(--op);border:2px solid var(--line);border-radius:14px;cursor:pointer}
+.xgrid button.on{background:var(--op-sel);color:var(--accent-ink);border-color:var(--op-sel)}
 .ops{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-.op{background:var(--op);border:1px solid var(--line);border-radius:14px;padding:12px 0;font-size:1.7rem;font-weight:600;cursor:pointer}
+.op{background:var(--op);border:1px solid var(--line);border-radius:14px;padding:10px 0;font-size:1.7rem;font-weight:600;cursor:pointer}
 .op.sel{background:var(--op-sel);color:var(--accent-ink);border-color:var(--op-sel)}
 .msg{min-height:1.6em;text-align:center;font-weight:600}
 .msg.good{color:var(--good)} .msg.bad{color:var(--bad)} .msg.info{color:var(--muted);font-weight:500}
-.row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.msg .btn{margin-left:8px;padding:4px 12px;font-size:.85rem;color:var(--ink);font-weight:600}
+.msg.pop{animation:msgpop .45s}
+@keyframes msgpop{0%{transform:scale(.8)}55%{transform:scale(1.1)}100%{transform:scale(1)}}
+.steps{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.steps:empty{display:none}
+.step{background:var(--op);border:1px solid var(--line);border-radius:999px;padding:4px 11px;font-size:.85rem;cursor:pointer;font-variant-numeric:tabular-nums}
+.step:disabled{cursor:default;opacity:.8}
+.step small{color:var(--muted);margin-right:4px;font-weight:700}
+.row{display:grid;grid-template-columns:1fr 1fr 1fr 1.35fr;gap:8px}
+.row .btn{white-space:nowrap}
 .btn{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 4px;cursor:pointer;font-size:.9rem}
 .btn:disabled{opacity:.4;cursor:default}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
-.hint{background:var(--panel);border:1px dashed var(--line);border-radius:12px;padding:10px 12px;color:var(--muted);font-size:.95rem;display:none;white-space:pre-line}
+.hint{background:var(--op);border:1px dashed var(--line);border-radius:12px;padding:10px 12px;color:var(--ink);font-size:.95rem;display:none;white-space:pre-line}
 .hint.show{display:block}
-.hdr-r{display:flex;gap:8px;align-items:center}
+.hdr-r{display:flex;gap:8px;align-items:center;flex:none}
 .snd{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:7px 9px;cursor:pointer;display:flex;align-items:center;color:var(--muted)}
-.msg.pop{animation:msgpop .45s}
-@keyframes msgpop{0%{transform:scale(.8)}55%{transform:scale(1.1)}100%{transform:scale(1)}}
+.chip{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:5px 12px 5px 8px;cursor:pointer;display:flex;align-items:center;gap:6px;font-weight:600;font-size:.9rem;max-width:62vw}
+.chip .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:2.5em}
+.chip .sk{display:none;flex:none}
+.chip .sk1{display:inline;border-left:1px solid var(--line);padding-left:7px}
+@media (min-width:430px){.chip .sk2,.chip .sk3{display:inline}}
+@media (min-width:600px){.chip .sk4,.chip .sk5{display:inline}}
 .challenge{display:none;background:var(--card-sel);border:1px solid var(--accent);border-radius:14px;padding:12px;text-align:center}
 .ch-title{font-weight:700;margin-bottom:10px}
+.ch-list{font-size:.9rem;margin:0 0 10px;font-variant-numeric:tabular-nums;white-space:pre-line}
 .ch-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
 .ch-row .btn{padding:9px 12px}
-#confetti{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:50;display:none}
-.share-link{display:block;margin:8px auto 0;background:none;border:0;color:var(--accent);font-size:.85rem;cursor:pointer;text-decoration:underline;padding:6px}
+#confetti{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:80;display:none}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:16px;z-index:60}
 .modal.open{display:flex}
-.dlg{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;max-width:340px;width:100%;text-align:center;display:flex;flex-direction:column;gap:12px}
+.dlg{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;max-width:360px;width:100%;max-height:90vh;overflow:auto;text-align:center;display:flex;flex-direction:column;gap:12px}
 .dlg h2{margin:0;font-size:1.15rem}
+.dlg p{margin:0;font-size:.85rem;color:var(--muted)}
 .qrbox{background:#fff;border-radius:12px;padding:12px;width:min(240px,70vw);margin:0 auto;line-height:0}
 .qrbox svg{width:100%;height:auto;display:block}
 .dlg .url{font-size:.8rem;color:var(--muted);word-break:break-all}
 .dlg .row2{display:flex;gap:8px}
 .dlg .row2 .btn{flex:1}
+.mlist{display:flex;flex-direction:column;gap:8px}
+.mlist .btn{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;font-size:1rem;text-align:left}
+.mlist .btn small{color:var(--muted)}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px}
+.ptile{position:relative;background:var(--card);border:2px solid var(--line);border-radius:14px;padding:10px 4px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;font-weight:600;overflow:hidden}
+.ptile .av{font-size:2rem;line-height:1.2}
+.ptile .nm{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.9rem}
+.ptile.rm{border-color:var(--bad)}
+.ptile.rm::after{content:"\2715";position:absolute;top:4px;right:8px;color:var(--bad);font-weight:800}
+.agrid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.agrid button{font-size:1.5rem;background:var(--card);border:2px solid var(--line);border-radius:12px;padding:6px 0;cursor:pointer}
+.agrid button.on{border-color:var(--accent);background:var(--card-sel)}
+.field{background:var(--card);border:2px solid var(--line);border-radius:12px;padding:12px;font-size:1.1rem;text-align:center;width:100%}
+.field:focus{outline:none;border-color:var(--accent)}
+.tgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.tsw{height:66px;border-radius:14px;border:2px solid var(--line);font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-shadow:0 1px 3px rgba(0,0,0,.35)}
+.tsw small{font-weight:600;font-size:.72rem}
+.tsw.on{outline:3px solid var(--accent);outline-offset:2px}
+.tsw:disabled{opacity:.55;cursor:default}
+.sgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stk{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 4px;display:flex;flex-direction:column;align-items:center;gap:2px}
+.stk .em{font-size:1.9rem;line-height:1.2}
+.stk b{font-size:.78rem}
+.stk small{font-size:.68rem;color:var(--muted);line-height:1.2}
+.stk.off .em{filter:grayscale(1);opacity:.3}
+.stk.off b{color:var(--muted)}
+.shd{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);text-align:left;margin-top:4px}
+.dlist{display:flex;flex-direction:column;gap:6px;text-align:left}
+.dlist div{display:flex;justify-content:space-between;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-weight:600}
+.dlist div.me{border-color:var(--accent)}
+.dlist small{color:var(--muted);font-weight:500}
+.toast{position:fixed;top:max(12px,env(safe-area-inset-top));left:50%;transform:translate(-50%,-180%);transition:transform .3s;z-index:70;background:var(--panel);color:var(--ink);
+  border:2px solid var(--accent);border-radius:14px;padding:10px 16px;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,.3);width:max-content;max-width:90vw;text-align:center;cursor:pointer}
+.toast.show{transform:translate(-50%,0)}
+.toast small{display:block;font-weight:600;color:var(--muted);font-size:.75rem;text-transform:uppercase;letter-spacing:.5px}
+.comp-row{display:none;align-items:center;justify-content:space-between;gap:10px;background:var(--panel);border:2px solid var(--bad);border-radius:12px;padding:6px 6px 6px 12px}
+:root.comp .comp-row{display:flex}
+.comp-tag{font-size:.75rem;font-weight:800;letter-spacing:1px;color:var(--bad)}
+.comp-row .btn{padding:6px 12px;background:var(--bad);border-color:var(--bad);color:#fff;font-weight:700}
+.proof{display:none;background:var(--card-sel);border:2px solid var(--good);border-radius:14px;padding:14px;text-align:left}
+.proof h2{margin:0 0 8px;font-size:1.1rem;color:var(--good)}
+.proof dl{margin:0 0 10px;display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:.95rem}
+.proof dt{color:var(--muted)} .proof dd{margin:0;font-weight:600}
+.proof pre{margin:0 0 10px;font:inherit;font-size:.9rem;white-space:pre-wrap;color:var(--ink)}
+.proof .row2{display:flex;gap:8px}
+.proof .row2 .btn{flex:1}
 footer{text-align:center;color:var(--muted);font-size:.78rem}
+:root[data-theme="ocean"] .stats{color:var(--ink)}
+:root[data-theme="space"] footer,:root[data-theme="ocean"] footer,:root[data-theme="volcano"] footer,:root[data-theme="arcade"] footer{color:var(--ink);opacity:.8}
+@media (prefers-reduced-motion:reduce){.num.glow,.bridge.ask{animation:none;box-shadow:0 0 0 4px var(--accent)}.deco{animation:none}}
 </style>
 </head>
 <body>
+<div class="scene" id="scene" aria-hidden="true"></div>
 <main>
   <header>
     <h1>Victoria's 24Game</h1>
     <div class="hdr-r">
-      <button class="snd" id="snd" aria-label="Sound on"></button>
-      <select id="level" aria-label="Difficulty">
-        <option value="easy">Easy</option>
-        <option value="medium" selected>Medium</option>
-        <option value="hard">Hard</option>
-        <option value="xhard">Extra Hard</option>
-      </select>
+      <button class="chip" id="who" aria-label="Switch player"></button>
+      <button class="snd" id="menuBtn" aria-label="Menu"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
     </div>
   </header>
   <canvas id="confetti" aria-hidden="true"></canvas>
 
-  <div class="seg" id="seg" role="tablist" aria-label="Game mode">
-    <button data-mode="classic" class="on">Classic</button>
-    <button data-mode="var">Variables</button>
-    <button data-mode="neg">Negatives</button>
+  <div class="comp-row">
+    <span class="comp-tag">COMPETITION: NO HELP</span>
+    <button class="btn" id="compExit">Exit</button>
+  </div>
+
+  <div class="bar">
+    <div class="seg" id="seg" aria-label="Game mode">
+      <button data-mode="classic" class="on">Classic</button>
+      <button data-mode="var">Variables</button>
+      <button data-mode="neg">Negatives</button>
+    </div>
+    <select id="level" aria-label="Difficulty">
+      <option value="easy">Easy</option>
+      <option value="medium" selected>Medium</option>
+      <option value="hard">Hard</option>
+      <option value="xhard">Extra Hard</option>
+    </select>
   </div>
 
   <section class="stats" aria-label="Stats">
-    <div class="stat"><b id="sTime">0:00</b><span>Time</span></div>
-    <div class="stat"><b id="sSolved">0</b><span>Solved</span></div>
-    <div class="stat"><b id="sStreak">0</b><span>Streak</span></div>
-    <div class="stat"><b id="sBest">-</b><span>Best</span></div>
+    <span>Time <b id="sTime">0:00</b></span>
+    <span>Solved <b id="sSolved">0</b></span>
+    <span>Streak <b id="sStreak">0</b></span>
+    <span>Best <b id="sBest">-</b></span>
   </section>
+  <div class="trail" id="trail" role="img"></div>
 
   <section class="board">
+    <div class="bhead">
+      <span class="blabel" id="blabel"></span>
+      <span class="target" id="target" aria-label="Target: 24">= 24</span>
+    </div>
     <div class="cards" id="cards"></div>
     <div id="vbox" style="display:none">
-      <div class="picker">
-        <div class="plabel">Pick a value for ? (1-9). The shared ? tile can be used once on each wheel.</div>
-        <div class="pks" id="pks"></div>
-      </div>
       <div class="wheels">
         <div class="wheel" id="wh0"><div class="wl">Left</div><div class="cards sm" id="wc0"></div></div>
         <div class="wheel" id="wh1"><div class="wl">Right</div><div class="cards sm" id="wc1"></div></div>
         <button class="num bridge" id="bridge" aria-label="Shared unknown value">?</button>
       </div>
+      <button class="btn xbtn" id="xBtn"></button>
     </div>
     <div class="ops" id="ops">
       <button class="op" data-op="+" aria-label="plus">+</button>
@@ -148,22 +296,21 @@ footer{text-align:center;color:var(--muted);font-size:.78rem}
       <button class="op" data-op="/" aria-label="divide">÷</button>
     </div>
     <div class="msg info" id="msg" aria-live="polite"></div>
-    <div class="challenge" id="challenge"></div>
+    <div class="steps" id="steps" aria-label="Your steps. Tap one to undo back to it."></div>
+    <div class="hint" id="hintBox"></div>
     <div class="row">
       <button class="btn" id="undo">Undo</button>
       <button class="btn" id="reset">Reset</button>
       <button class="btn" id="hint">Hint</button>
-      <button class="btn" id="skip">Skip</button>
+      <button class="btn" id="next">Skip</button>
     </div>
-    <div class="row" style="grid-template-columns:1fr 1fr">
-      <button class="btn" id="reveal">Show answer</button>
-      <button class="btn primary" id="next">New card</button>
-    </div>
-    <div class="hint" id="hintBox"></div>
+    <div class="challenge" id="dpanel"></div>
+    <div class="challenge" id="ways"></div>
+    <div class="challenge" id="challenge"></div>
+    <div class="proof" id="proof"></div>
   </section>
 
   <footer id="foot"></footer>
-  <button class="share-link" id="shareBtn">Share this game (QR code)</button>
 
   <div class="modal" id="shareDlg" role="dialog" aria-modal="true" aria-labelledby="shareTitle">
     <div class="dlg">
@@ -176,6 +323,10 @@ footer{text-align:center;color:var(--muted);font-size:.78rem}
       </div>
     </div>
   </div>
+  <div class="modal" id="sheet" role="dialog" aria-modal="true">
+    <div class="dlg" id="sheetBody"></div>
+  </div>
+  <div class="toast" id="toast" role="status"></div>
 </main>
 
 <script>
@@ -194,10 +345,16 @@ function apply(op,a,b){
     case '/': return b[0]===0 ? null : frac(a[0]*b[1], a[1]*b[0]);
   }
 }
-// Returns distinct solutions to 24 as {d: expression, s: [steps]}
-function solve(nums){
+// Canonical key of a combination: + and × sort their operands so commuted forms collapse.
+const canon = (op,xc,yc) => (op==='+'||op==='*') ? '('+[xc,yc].sort().join(op)+')' : '('+xc+op+yc+')';
+const stripP = d => d.replace(/^\((.*)\)$/,'$1');
+// A leaf for the solver or the board: value, display text, canonical key, optional ref back to a board tile.
+const leaf = (n,ref) => ({v:[n,1], d:n<0?'('+sgn(n)+')':String(n), c:String(n), s:[], ref});
+// Solves from any position (items may be fractions or earlier results).
+// Returns distinct solutions {d: expression, s: [step text], st: [step objects], c: canonical key}.
+// A step object is {t, op, a, b, v, ar, br}; ar/br are the leaf refs when that operand is a starting item.
+function solveItems(start){
   const found = new Map();
-  const start = nums.map(n=>({v:[n,1], d:n<0?'('+sgn(n)+')':String(n), c:String(n), s:[]}));
   (function rec(items){
     if(items.length===1){
       const it=items[0];
@@ -214,16 +371,29 @@ function solve(nums){
           for(const [x,y] of pairs){
             const v=apply(op,x.v,y.v);
             if(!v) continue;
-            const c = comm ? '('+[x.c,y.c].sort().join(op)+')' : '('+x.c+op+y.c+')';
+            const c = canon(op,x.c,y.c);
             const d = '('+x.d+' '+SYM[op]+' '+y.d+')';
-            const s = [...x.s,...y.s, fmtP(x.v)+' '+SYM[op]+' '+fmtP(y.v)+' = '+fmt(v)];
+            const s = [...x.s,...y.s, {t:fmtP(x.v)+' '+SYM[op]+' '+fmtP(y.v)+' = '+fmt(v), op, a:x.v, b:y.v, v, ar:x.ref, br:y.ref}];
             rec([...rest,{v,d,c,s}]);
           }
         }
       }
     }
   })(start);
-  return [...found.values()].map(x=>({d:x.d.replace(/^\((.*)\)$/,'$1'), s:x.s}));
+  return [...found.values()].map(x=>({d:stripP(x.d), s:x.s.map(q=>q.t), st:x.s, c:x.c}));
+}
+function solve(nums){ return solveItems(nums.map((n,i)=>leaf(n,i))); }
+// Small seeded random generator (mulberry32) so a date can always deal the same card.
+function seeded(str){
+  let h=1779033703^str.length;
+  for(let i=0;i<str.length;i++){ h=Math.imul(h^str.charCodeAt(i),3432918353); h=h<<13|h>>>19; }
+  let a=h>>>0;
+  return function(){
+    a|=0; a=a+0x6D2B79F5|0;
+    let t=Math.imul(a^a>>>15,1|a);
+    t=t+Math.imul(t^t>>>7,61|t)^t;
+    return ((t^t>>>14)>>>0)/4294967296;
+  };
 }
 // Difficulty is the number of distinct ways to reach 24: fewer ways = harder.
 // dbl: minimum count of double-digit numbers on the card.
@@ -234,10 +404,10 @@ const LEVELS = {
   xhard:  {max:25, min:1, hi:2, dbl:2}
 };
 const dbls = nums => nums.filter(n=>Math.abs(n)>=10).length;
-function generate(level, seen){
-  const L = LEVELS[level];
+function generate(level, seen, rng){
+  const L = LEVELS[level], R = rng || Math.random;
   for(let tries=0; tries<5000; tries++){
-    const nums = Array.from({length:4}, ()=>1+Math.floor(Math.random()*L.max));
+    const nums = Array.from({length:4}, ()=>1+Math.floor(R()*L.max));
     if(L.dbl && dbls(nums)<L.dbl) continue;
     const key = [...nums].sort((a,b)=>a-b).join(',');
     if(seen && seen.has(key)) continue;
@@ -249,6 +419,8 @@ function generate(level, seen){
   }
   return null;
 }
+// The daily card: Classic, Medium, the same for everyone on a given date (YYYY-MM-DD).
+function dailyCard(date){ return generate('medium', null, seeded('24game-'+date)); }
 // Negatives mode: whole numbers from -R to R (no zero), at least one negative.
 const NLEVELS = {
   easy:   {R:5,  min:8, hi:999},
@@ -363,37 +535,66 @@ function generateVar(level, seen, prevX){
 
 if (typeof document !== 'undefined') (function(){
   const $ = id => document.getElementById(id);
+  const root = document.documentElement;
+  const el = (tag, cls, text) => { const e=document.createElement(tag); if(cls) e.className=cls; if(text!=null) e.textContent=text; return e; };
   const store = {
     get(k,d){ try{ const v=localStorage.getItem('g24_'+k); return v===null?d:JSON.parse(v);}catch(e){return d} },
-    set(k,v){ try{ localStorage.setItem('g24_'+k, JSON.stringify(v)); }catch(e){} }
+    set(k,v){ try{ localStorage.setItem('g24_'+k, JSON.stringify(v)); }catch(e){} },
+    del(k){ try{ localStorage.removeItem('g24_'+k); }catch(e){} }
   };
   const blank = () => ({solved:0, streak:0, best:{easy:null,medium:null,hard:null,xhard:null}});
+  const fixStats = s => {
+    const b=blank();
+    if(s && typeof s==='object'){ b.solved=s.solved|0; b.streak=s.streak|0; if(s.best) Object.assign(b.best,s.best); }
+    return b;
+  };
 
-  let mode  = store.get('mode','classic');
-  let level = store.get('level','medium');
-  const S = { classic: store.get('stats',blank()), var: store.get('vstats',blank()), neg: store.get('nstats',blank()) };
+  // ---- Players: each has their own stats, stickers, theme. A guest (me === null) is kept in memory only. ----
+  let players = store.get('players',[]); if(!Array.isArray(players)) players=[];
+  let me = null, guestMem = {}, guestTheme = 'classic';
+  const pstore = {
+    get(k,d){ return me ? store.get('p'+me.id+'_'+k,d) : (k in guestMem ? guestMem[k] : d); },
+    set(k,v){ if(me) store.set('p'+me.id+'_'+k,v); else guestMem[k]=v; }
+  };
+  const PKEYS = ['stats','vstats','nstats','sound','mode','level','prog'];
+  const AVATARS = ['🦊','🐼','🦖','🐙','🦉','🐯','🐸','🐢','🚀','⚽','🎸','🤖'];
+
+  let mode, level, S, prog, soundOn, theme;
   const STATKEY = { classic:'stats', var:'vstats', neg:'nstats' };
-  if(!S[mode]) mode='classic';
   const st = () => S[mode];
-  const saveStats = () => store.set(STATKEY[mode], st());
+  const saveStats = () => pstore.set(STATKEY[mode], st());
+  const saveProg = () => pstore.set('prog', prog);
   const seen = new Set();
   const NAMES = ['Left','Right'];
 
-  let card, boards, history, sel, selOp, xVal, startT, timer, done, hintsShown, hintList, clean;
+  let card, boards, history, sel, selOp, xVal, startT, timer, done, won, clean;
+  let hintLevel, hintAt, varStage, attempts, replay, wrongHit, xPicks;
+  const glow = new Set();
+  let comp = false;                                  // competition mode: no help
+  let daily = false, dailyDate = null, prevView = null; // daily card: Classic Medium, same for everyone
+  let sceneCount = 0, sessionClean = 0, decos = [];  // living background, this session
 
-  $('level').value = level;
+  const pad = n => String(n).padStart(2,'0');
+  const dkey = d => d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+  const today = () => dkey(new Date());
+  const toDate = k => { const a=k.split('-').map(Number); return new Date(a[0],a[1]-1,a[2],12); };
+  const niceDate = k => toDate(k).toLocaleDateString([], {month:'short', day:'numeric'});
+  const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
 
   function fmtTime(s){ return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); }
   function renderStats(){
     const s=st();
+    root.dataset.level=level; // the scene and board change with difficulty
     $('sSolved').textContent = s.solved;
     $('sStreak').textContent = s.streak;
     const b = s.best[level];
     $('sBest').textContent = b==null ? '-' : fmtTime(b);
   }
   function tick(){ $('sTime').textContent = fmtTime(Math.floor((Date.now()-startT)/1000)); }
-  function setMsg(t,cls,pop){
+  // act: optional {label, fn} shown as a small button inside the message
+  function setMsg(t,cls,pop,act){
     const m=$('msg'); m.textContent=t; m.className='msg '+(cls||'info');
+    if(act){ const b=el('button','btn',act.label); b.onclick=act.fn; m.appendChild(b); }
     if(pop){ void m.offsetWidth; m.classList.add('pop'); }
   }
 
@@ -407,6 +608,8 @@ if (typeof document !== 'undefined') (function(){
     do{ m=list[Math.floor(Math.random()*list.length)]; } while(m===lastPick[key] && list.length>1 && ++t<20);
     lastPick[key]=m; return m;
   }
+  // Now and then, use the player's name: "Nice work, Sam!"
+  const personal = m => me && Math.random()<.4 && /!$/.test(m) ? m.slice(0,-1)+', '+me.name+'!' : m;
   function streakMsg(n){
     if(n===3) return "3 in a row, you're on fire!";
     if(n===5) return '5 in a row! Amazing!';
@@ -416,7 +619,7 @@ if (typeof document !== 'undefined') (function(){
   const isMilestone = n => n===3 || n%5===0;
 
   // ---- Sound (synthesized, no files) ----
-  let soundOn = store.get('sound', true), actx = null;
+  let actx = null;
   function audio(){
     try{
       if(!actx){ const C=window.AudioContext||window.webkitAudioContext; if(!C) return null; actx=new C(); }
@@ -443,36 +646,91 @@ if (typeof document !== 'undefined') (function(){
       else if(kind==='try'){ tone(300,0,.25,'sine',.12,200); }
     }catch(e){}
   }
-  const SVG='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">';
-  const ICON_ON = SVG+'<path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>';
-  const ICON_OFF = SVG+'<path d="M11 5 6 9H3v6h3l5 4z"/><path d="m16 9 6 6M22 9l-6 6"/></svg>';
-  function renderSnd(){ $('snd').innerHTML = soundOn?ICON_ON:ICON_OFF; $('snd').setAttribute('aria-label', soundOn?'Sound on':'Sound off'); }
-  $('snd').onclick=()=>{ soundOn=!soundOn; store.set('sound',soundOn); renderSnd(); sfx('win'); };
-  renderSnd();
 
-  // ---- Confetti (canvas, ~2 seconds) ----
+  // ---- Themes ----
+  // sw: swatch for the picker, deco: things collected into the scene, fx: win effect, lock: stickers needed
+  const THEMES = {
+    classic:{name:'Classic', sw:'linear-gradient(135deg,#2f6fed,#7aa5ff)', deco:['⭐'],
+      fx:{colors:['#2f6fed','#1e9e5a','#f5b700','#e8553d','#a14df0','#16b8c9'], shape:'rect', from:'burst'}},
+    space:{name:'Space', sw:'linear-gradient(135deg,#0b1030,#3b2a80)', deco:['⭐','🪐','✨','🌙','☄️','🛸'],
+      fx:{colors:['#ffd166','#ffffff','#9ad1ff'], shape:'star', from:'burst'}},
+    ocean:{name:'Ocean', sw:'linear-gradient(#1596c4,#06476e)', deco:['🐟','🐠','🐡','🦀','🐚','🐬'],
+      fx:{colors:['#ffffff','#bfefff','#7fd8ff'], shape:'ring', from:'bottom'}},
+    jungle:{name:'Jungle', sw:'linear-gradient(#e8f5da,#9ccc7a)', fg:'#1f3a1a', deco:['🦋','🐞','🦜','🌺','🐒','🍃'],
+      fx:{colors:['#2e7d32','#66bb6a','#9ccc65','#f9a825'], shape:'leaf', from:'top'}},
+    chalk:{name:'Chalkboard', sw:'linear-gradient(135deg,#274236,#20352b)', deco:['✏️','📐','⭐','🍎','📏','💡'],
+      fx:{colors:['#ffffff','#ffe27a','#ffb3c1','#a8e6ff'], shape:'dot', from:'burst'}},
+    arcade:{name:'Arcade', sw:'linear-gradient(135deg,#0a0a14,#3b0f6b)', lock:10, deco:['👾','💰','🕹️','💎','⚡','🍒'],
+      fx:{colors:['#00e5ff','#39ff88','#ff3df2','#fff200'], shape:'px', from:'burst'}},
+    volcano:{name:'Volcano', sw:'linear-gradient(#2b1710,#c2410c)', lock:20, deco:['🔥','🌋','💎','🦎','☄️','⛰️'],
+      fx:{colors:['#ff8a1f','#ffd23f','#ff4d1f'], shape:'dot', from:'bottom'}}
+  };
+  const decoFor = i => { const d=THEMES[theme].deco; return d[i%d.length]; };
+  function decoEl(d,i){
+    const s=el('span','deco',decoFor(i));
+    s.style.left=d.x+'%'; s.style.top=d.y+'%';
+    return s;
+  }
+  function renderScene(){ const sc=$('scene'); sc.innerHTML=''; decos.forEach((d,i)=>sc.appendChild(decoEl(d,i))); }
+  function renderTrail(){
+    const t=$('trail'); t.innerHTML='';
+    for(let i=0;i<24;i++){ const x=el('i', i<sceneCount?'on':null, i<sceneCount?decoFor(i):'·'); t.appendChild(x); }
+    t.setAttribute('aria-label', sceneCount+' of 24 collected for your world');
+  }
+  // One more thing for the scene after each clean solve. Returns true when the scene reaches 24.
+  function addDeco(){
+    const d={x:2+Math.random()*90, y:4+Math.random()*86};
+    decos.push(d); sceneCount++;
+    $('scene').appendChild(decoEl(d,sceneCount-1));
+    renderTrail();
+    return sceneCount===24;
+  }
+  function applyTheme(){ root.dataset.theme=theme; renderScene(); renderTrail(); }
+  function setTheme(k){
+    theme=k;
+    if(me){ me.theme=k; store.set('players',players); } else guestTheme=k;
+    applyTheme();
+  }
+
+  // ---- Win effect (canvas, about 2 seconds, shaped by the theme) ----
   const reduceMotion = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
-  function confetti(){
+  function effect(){
     if(reduceMotion) return;
     try{
+      const F=THEMES[theme].fx;
       const cv=$('confetti'), ctx=cv.getContext('2d');
       const dpr=window.devicePixelRatio||1, W=cv.width=innerWidth*dpr, H=cv.height=innerHeight*dpr;
       cv.style.display='block';
-      const colors=['#2f6fed','#1e9e5a','#f5b700','#e8553d','#a14df0','#16b8c9'];
-      const P=Array.from({length:140},()=>({
-        x:W/2+(Math.random()-.5)*W*.3, y:H*.35,
-        vx:(Math.random()-.5)*16*dpr, vy:(-Math.random()*14-4)*dpr,
-        s:(4+Math.random()*6)*dpr, r:Math.random()*6.28, vr:(Math.random()-.5)*.4,
-        c:colors[Math.floor(Math.random()*colors.length)]
-      }));
+      const rnd=Math.random;
+      const P=Array.from({length:F.from==='burst'?140:90},()=>{
+        const p={s:(4+rnd()*6)*dpr, r:rnd()*6.28, vr:(rnd()-.5)*.4, c:F.colors[Math.floor(rnd()*F.colors.length)]};
+        if(F.from==='bottom'){ p.x=rnd()*W; p.y=H+rnd()*H*.4; p.vx=(rnd()-.5)*2*dpr; p.vy=-(5+rnd()*9)*dpr; p.g=-.03*dpr; }
+        else if(F.from==='top'){ p.x=rnd()*W; p.y=-rnd()*H*.4; p.vx=(rnd()-.5)*4*dpr; p.vy=(2+rnd()*5)*dpr; p.g=.06*dpr; p.s*=1.4; }
+        else { p.x=W/2+(rnd()-.5)*W*.3; p.y=H*.35; p.vx=(rnd()-.5)*16*dpr; p.vy=(-rnd()*14-4)*dpr; p.g=.45*dpr; }
+        return p;
+      });
+      const draw=p=>{
+        const s=p.s;
+        switch(F.shape){
+          case 'dot': ctx.beginPath(); ctx.arc(0,0,s*.45,0,6.3); ctx.fill(); break;
+          case 'ring': ctx.lineWidth=1.5*dpr; ctx.beginPath(); ctx.arc(0,0,s,0,6.3); ctx.stroke(); break;
+          case 'leaf': ctx.beginPath(); ctx.ellipse(0,0,s,s*.42,0,0,6.3); ctx.fill(); break;
+          case 'px': ctx.fillRect(-s*.6,-s*.6,s*1.2,s*1.2); break;
+          case 'star': ctx.beginPath();
+            for(let k=0;k<8;k++){ const a=k*Math.PI/4, q=k%2?s*.35:s; ctx.lineTo(Math.cos(a)*q,Math.sin(a)*q); }
+            ctx.closePath(); ctx.fill(); break;
+          default: ctx.fillRect(-s/2,-s/2,s,s*.6);
+        }
+      };
       const t0=performance.now();
       (function frame(now){
         const t=now-t0; ctx.clearRect(0,0,W,H);
         P.forEach(p=>{
-          p.vy+=.45*dpr; p.x+=p.vx; p.y+=p.vy; p.r+=p.vr;
-          ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.r);
-          ctx.fillStyle=p.c; ctx.globalAlpha=Math.max(0,1-t/2200);
-          ctx.fillRect(-p.s/2,-p.s/2,p.s,p.s*.6); ctx.restore();
+          p.vy+=p.g; p.x+=p.vx; p.y+=p.vy; p.r+=p.vr;
+          ctx.save(); ctx.translate(p.x,p.y);
+          if(F.shape!=='px' && F.shape!=='ring') ctx.rotate(p.r);
+          ctx.fillStyle=ctx.strokeStyle=p.c; ctx.globalAlpha=Math.max(0,1-t/2200);
+          draw(p); ctx.restore();
         });
         if(t<2200) requestAnimationFrame(frame);
         else { ctx.clearRect(0,0,W,H); cv.style.display='none'; }
@@ -480,45 +738,374 @@ if (typeof document !== 'undefined') (function(){
     }catch(e){}
   }
 
-  // ---- Streak challenge prompt ----
+  // ---- Sheets (one reusable dialog) ----
+  const sheet=$('sheet'), sheetBody=$('sheetBody');
+  let sheetLocked=false;
+  function openSheet(build, locked){
+    sheetBody.innerHTML=''; sheetLocked=!!locked;
+    build(sheetBody);
+    sheet.classList.add('open'); sheetBody.scrollTop=0;
+  }
+  function closeSheet(){ sheet.classList.remove('open'); sheetLocked=false; }
+  sheet.onclick=e=>{ if(e.target===sheet && !sheetLocked) closeSheet(); };
+  const addBtn = (parent,label,fn,cls) => { const b=el('button','btn'+(cls?' '+cls:''),label); b.onclick=fn; parent.appendChild(b); return b; };
+
+  // ---- Stickers ----
+  // c is the context of what just happened. W: any real win. CW: a win with no hints.
+  const W  = f => c => c.win && f(c);
+  const CW = f => c => c.win && c.clean && f(c);
+  const isInt = (v,n) => v[0]===n && v[1]===1;
+  const STICKERS = [
+    {id:'first',  g:'Getting started', e:'🎉', n:'First 24',       h:'Solve your first card',                        t:W(c=>true)},
+    {id:'hat',    g:'Getting started', e:'🎩', n:'Hat Trick',      h:'3 in a row',                                   t:W(c=>c.streak>=3)},
+    {id:'five',   g:'Getting started', e:'🖐️', n:'High Five',      h:'5 in a row',                                   t:W(c=>c.streak>=5)},
+    {id:'ten',    g:'Getting started', e:'🔟', n:'Perfect Ten',    h:'10 in a row',                                  t:W(c=>c.streak>=10)},
+    {id:'dozen',  g:'Getting started', e:'🥚', n:'Two Dozen',      h:'Solve 24 cards',                               t:W(c=>c.total>=24)},
+    {id:'century',g:'Getting started', e:'💯', n:'Century',        h:'Solve 100 cards',                              t:W(c=>c.total>=100)},
+    {id:'frac',   g:'Math skills',     e:'🍕', n:'Fraction Hero',  h:'Use a fraction on the way to 24',              t:CW(c=>c.inter.some(v=>v[1]!==1))},
+    {id:'below',  g:'Math skills',     e:'🧊', n:'Below Zero',     h:'Go below zero in Classic and still make 24',   t:CW(c=>c.mode==='classic' && c.inter.some(v=>v[0]<0))},
+    {id:'div',    g:'Math skills',     e:'➗', n:'Division Star',  h:'Use ÷ to make 24',                             t:CW(c=>c.ops.includes('/'))},
+    {id:'mix',    g:'Math skills',     e:'🎨', n:'Mix Master',     h:'Use three different signs on one card',        t:CW(c=>c.mode!=='var' && new Set(c.ops).size===3)},
+    {id:'one',    g:'Math skills',     e:'🔁', n:'One Trick',      h:'Use the same sign for every step',             t:CW(c=>c.mode!=='var' && new Set(c.ops).size===1)},
+    {id:'notimes',g:'Math skills',     e:'🚫', n:'No Times',       h:'Make 24 without ×',                            t:CW(c=>!c.ops.includes('*'))},
+    {id:'big',    g:'Math skills',     e:'🐘', n:'Big Numbers',    h:'Solve an Extra Hard card',                     t:CW(c=>c.level==='xhard')},
+    {id:'det',    g:'Math skills',     e:'🕵️', n:'Detective',      h:'Variables: pick the right ? on your first try', t:CW(c=>c.mode==='var' && c.xPicks===1)},
+    {id:'fast',   g:'Grit and speed',  e:'⚡', n:'Lightning',      h:'Solve in under 10 seconds',                    t:CW(c=>c.secs<10)},
+    {id:'steady', g:'Grit and speed',  e:'🐢', n:'Slow and Steady',h:'Stick with one card for 3 minutes and solve it', t:CW(c=>c.secs>=180)},
+    {id:'back',   g:'Grit and speed',  e:'💪', n:'Comeback',       h:'Get the wrong number, then fix it',            t:CW(c=>c.comeback)},
+    {id:'nohelp', g:'Grit and speed',  e:'🙅', n:'No Help Needed', h:'10 cards in one sitting without hints',        t:W(c=>c.sessionClean>=10)},
+    {id:'another',g:'Explorer',        e:'🔀', n:'Another Way',    h:'Find a second way on the same card',           t:c=>c.found>=2},
+    {id:'ways5',  g:'Explorer',        e:'🧭', n:'Way Finder',     h:'Find 5 ways on one card',                      t:c=>c.found>=5},
+    {id:'allways',g:'Explorer',        e:'🏆', n:'Every Way',      h:'Find every way on a card with 3 or more',      t:c=>c.ways>=3 && c.found>=c.ways},
+    {id:'modes',  g:'Explorer',        e:'🗺️', n:'Mode Explorer',  h:'Solve a card in all three modes',              t:W(c=>['classic','var','neg'].every(m=>c.prog.modes[m]))},
+    {id:'levels', g:'Explorer',        e:'🧗', n:'Level Climber',  h:'Solve a card at every level',                  t:W(c=>['easy','medium','hard','xhard'].every(l=>c.prog.levels[l]))},
+    {id:'sky',    g:'Explorer',        e:'🌌', n:'Full World',     h:'Collect all 24 things for your world',         t:c=>c.sky},
+    {id:'daily',  g:'Habits',          e:'📅', n:'Daily Player',   h:'Solve a daily card',                           t:W(c=>c.daily)},
+    {id:'week',   g:'Habits',          e:'🎒', n:'School Week',    h:'Daily card five school days in a row',         t:W(c=>c.daily && c.dailyRun>=5)},
+    {id:'champ',  g:'Habits',          e:'🥇', n:'Champion',       h:'Win a competition card',                       t:W(c=>c.comp)},
+    {id:'s12',    g:'Secret', sec:1,   e:'👯', n:'Double Dozen',   h:'Finish with 12 + 12',                          t:W(c=>c.last && c.last.op==='+' && isInt(c.last.a,12) && isInt(c.last.b,12))},
+    {id:'s3388',  g:'Secret', sec:1,   e:'🧙', n:'The Famous One', h:'Solve 3, 3, 8, 8',                             t:W(c=>c.key==='3,3,8,8')},
+    {id:'s24',    g:'Secret', sec:1,   e:'⏱️', n:'Right on Time',  h:'Solve in exactly 0:24',                        t:W(c=>c.secs===24)}
+  ];
+  const stickerCount = () => STICKERS.filter(k=>prog.stickers[k.id]).length;
+  // Returns the stickers newly earned by this event (and saves them).
+  function award(ctx){
+    const before=stickerCount(), fresh=[];
+    STICKERS.forEach(k=>{
+      if(prog.stickers[k.id]) return;
+      let ok=false; try{ ok=!!k.t(ctx); }catch(e){}
+      if(ok){ prog.stickers[k.id]=Date.now(); fresh.push(k); }
+    });
+    if(fresh.length){
+      saveProg(); renderWho();
+      const after=before+fresh.length;
+      fresh.unlocked=Object.keys(THEMES).filter(t=>THEMES[t].lock && before<THEMES[t].lock && after>=THEMES[t].lock).map(t=>THEMES[t].name);
+    }
+    return fresh;
+  }
+  let toastT;
+  function showToast(list){
+    const t=$('toast'); t.innerHTML='';
+    t.appendChild(el('small',null,list.length>1?'New stickers!':'New sticker!'));
+    t.appendChild(el('span',null,list.map(k=>k.e+' '+k.n).join('   ')));
+    (list.unlocked||[]).forEach(n=>t.appendChild(el('small',null,n+' theme unlocked!')));
+    t.classList.add('show');
+    clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),4500);
+  }
+  $('toast').onclick=()=>{ $('toast').classList.remove('show'); showStickers(); };
+  function showStickers(){
+    openSheet(b=>{
+      b.appendChild(el('h2',null,'Sticker book'));
+      b.appendChild(el('p',null,`${stickerCount()} of ${STICKERS.length} collected`+(me?'':' (guest: not saved)')));
+      let grid, group;
+      STICKERS.forEach(k=>{
+        if(k.g!==group){ group=k.g; b.appendChild(el('div','shd',group)); grid=el('div','sgrid'); b.appendChild(grid); }
+        const has=!!prog.stickers[k.id], hide=k.sec&&!has;
+        const c=el('div','stk'+(has?'':' off'));
+        c.appendChild(el('span','em',hide?'❓':k.e));
+        c.appendChild(el('b',null,hide?'???':k.n));
+        c.appendChild(el('small',null,hide?'A secret. Keep playing!':k.h));
+        grid.appendChild(c);
+      });
+      addBtn(b,'Close',closeSheet,'primary');
+    });
+  }
+
+  // ---- Theme picker ----
+  // first: shown right after a new player enters their name
+  function showThemes(first){
+    openSheet(b=>{
+      b.appendChild(el('h2',null, first && me ? 'Pick your world, '+me.name : 'Pick your world'));
+      const n=stickerCount(), g=el('div','tgrid'); b.appendChild(g);
+      Object.keys(THEMES).forEach(k=>{
+        const T=THEMES[k], locked=!!T.lock && n<T.lock && k!==theme;
+        const x=el('button','tsw'+(k===theme?' on':''));
+        x.style.background=T.sw; x.style.color=T.fg||'#fff'; if(T.fg) x.style.textShadow='none';
+        x.appendChild(el('span',null,(locked?'🔒 ':'')+T.name));
+        x.appendChild(el('small',null,locked?T.lock+' stickers to unlock':T.deco.slice(0,4).join(' ')));
+        x.disabled=locked;
+        x.onclick=()=>{ setTheme(k); showThemes(first); };
+        g.appendChild(x);
+      });
+      b.appendChild(el('p',null,'Solve cards without hints to collect 24 things for your world.'));
+      addBtn(b, first?'Start playing':'Done', closeSheet,'primary');
+    });
+  }
+
+  // ---- Who's playing? ----
+  function renderWho(){
+    const w=$('who'); w.innerHTML='';
+    w.appendChild(el('span',null,me?me.avatar:'👤'));
+    w.appendChild(el('span','nm',me?me.name:'Guest'));
+    // Newest stickers next to the name: 1 on a phone, up to 5 on wider screens (CSS decides how many show).
+    STICKERS.filter(k=>prog && prog.stickers[k.id]).sort((a,c)=>prog.stickers[c.id]-prog.stickers[a.id]).slice(0,5)
+      .forEach((k,i)=>{ const s=el('span','sk sk'+(i+1),k.e); s.title=k.n; w.appendChild(s); });
+  }
+  // force: the sheet cannot be dismissed without choosing. manage: tapping a player removes them.
+  function showWho(force, manage){
+    openSheet(b=>{
+      b.appendChild(el('h2',null,"Who's playing?"));
+      if(players.length){
+        const g=el('div','pgrid'); b.appendChild(g);
+        players.forEach(p=>{
+          const t=el('button','ptile'+(manage?' rm':''));
+          t.appendChild(el('span','av',p.avatar)); t.appendChild(el('span','nm',p.name));
+          t.onclick=()=>{ if(manage) removePlayer(p,force); else { closeSheet(); startSession(p); } };
+          g.appendChild(t);
+        });
+      } else b.appendChild(el('p',null,'Add your name to keep your stickers and best times on this device.'));
+      if(manage){
+        b.appendChild(el('p',null,'Tap a player to remove them from this device.'));
+        addBtn(b,'Done',()=>showWho(force,false),'primary');
+        return;
+      }
+      addBtn(b,'+ Add player',()=>showAdd(force),'primary');
+      addBtn(b,'Just play (nothing saved)',()=>{ closeSheet(); startSession(null); });
+      if(players.length) addBtn(b,'Remove a player',()=>showWho(force,true));
+      if(!force) addBtn(b,'Cancel',closeSheet);
+    }, force);
+  }
+  function removePlayer(p,force){
+    if(!confirm(`Remove ${p.name}? Their stickers and best times on this device will be deleted.`)) return;
+    players=players.filter(q=>q.id!==p.id);
+    store.set('players',players);
+    PKEYS.forEach(k=>store.del('p'+p.id+'_'+k));
+    if(me && me.id===p.id){ startSession(null); force=true; }
+    showWho(force, false);
+  }
+  // Stats saved before players existed go to the first player made on this device.
+  function migrate(p){
+    if(store.get('migrated',false)) return;
+    ['stats','vstats','nstats','sound','mode','level'].forEach(k=>{
+      const v=store.get(k,null); if(v!==null) store.set('p'+p.id+'_'+k, v);
+    });
+    store.set('migrated',true);
+  }
+  function showAdd(force){
+    openSheet(b=>{
+      b.appendChild(el('h2',null,'New player'));
+      const inp=el('input','field');
+      inp.type='text'; inp.maxLength=12; inp.placeholder='First name or nickname'; inp.autocomplete='off';
+      inp.setAttribute('autocapitalize','words'); inp.setAttribute('aria-label','Your name');
+      b.appendChild(inp);
+      b.appendChild(el('p',null,'Stays on this device. Nothing is sent anywhere.'));
+      b.appendChild(el('div','shd','Pick a buddy'));
+      let av=AVATARS[Math.floor(Math.random()*AVATARS.length)];
+      const g=el('div','agrid'); b.appendChild(g);
+      AVATARS.forEach(a=>{
+        const x=el('button',a===av?'on':null,a);
+        x.onclick=()=>{ av=a; [...g.children].forEach(c=>c.classList.toggle('on',c===x)); };
+        g.appendChild(x);
+      });
+      const row=el('div','row2'); b.appendChild(row);
+      addBtn(row,'Back',()=>showWho(force));
+      const save=addBtn(row,"Let's play",()=>{
+        const name=inp.value.replace(/\s+/g,' ').trim().slice(0,12);
+        if(!name) return;
+        const p={id:Date.now().toString(36)+Math.floor(Math.random()*1296).toString(36), name, avatar:av, theme:'classic'};
+        players.push(p); store.set('players',players); migrate(p);
+        closeSheet(); startSession(p); showThemes(true);
+      },'primary');
+      save.disabled=true;
+      inp.oninput=()=>{ save.disabled=!inp.value.trim(); };
+      inp.onkeydown=e=>{ if(e.key==='Enter' && !save.disabled) save.click(); };
+      setTimeout(()=>inp.focus(),60);
+    }, force);
+  }
+  // Load a player (or a fresh guest) and deal a card. persist=false leaves the remembered player alone.
+  function startSession(p, persist){
+    me=p||null;
+    if(persist!==false) store.set('current', me?me.id:null);
+    if(!me) guestMem={};
+    if(comp){ comp=false; root.classList.remove('comp'); }
+    daily=false; prevView=null; sceneCount=0; sessionClean=0; decos=[]; seen.clear();
+    mode=pstore.get('mode','classic'); level=pstore.get('level','medium');
+    if(!STATKEY[mode]) mode='classic';
+    if(!LEVELS[level]) level='medium';
+    S={ classic:fixStats(pstore.get('stats',null)), var:fixStats(pstore.get('vstats',null)), neg:fixStats(pstore.get('nstats',null)) };
+    const pr=pstore.get('prog',null)||{};
+    prog={ stickers:pr.stickers||{}, daily:pr.daily||{}, modes:pr.modes||{}, levels:pr.levels||{} };
+    soundOn=pstore.get('sound',true)!==false;
+    theme=me?me.theme:guestTheme; if(!THEMES[theme]) theme='classic';
+    applyTheme(); renderWho();
+    $('level').value=level; applyModeUI(); renderStats(); newCard();
+  }
+
+  // ---- Menu ----
+  function showMenu(){
+    openSheet(b=>{
+      b.appendChild(el('h2',null,'Menu'));
+      const L=el('div','mlist'); b.appendChild(L);
+      const item=(label,note,fn)=>{
+        const x=el('button','btn'); x.appendChild(el('span',null,label)); if(note) x.appendChild(el('small',null,note));
+        x.onclick=fn; L.appendChild(x);
+      };
+      const dr=prog.daily[today()];
+      if(!comp) item('📅 Daily card', dr?'Done in '+fmtTime(dr.t):'New today', showDaily);
+      item('⭐ Sticker book', stickerCount()+' of '+STICKERS.length, showStickers);
+      item('🎨 Theme', THEMES[theme].name, ()=>showThemes());
+      item((soundOn?'🔊':'🔇')+' Sound', soundOn?'On':'Off', ()=>{ soundOn=!soundOn; pstore.set('sound',soundOn); sfx('win'); showMenu(); });
+      item(comp?'🏁 Exit Competition':'🏁 Start Competition', comp?'':'No help', ()=>{ closeSheet(); toggleComp(); });
+      item('🔗 Share this game','QR code',()=>{ closeSheet(); openShare(); });
+      if(!comp) item('👥 Switch player', me?me.name:'Guest', ()=>showWho(false));
+      addBtn(b,'Close',closeSheet,'primary');
+    });
+  }
+  $('menuBtn').onclick=showMenu;
+  $('who').onclick=()=>{
+    if(comp){ setMsg('Finish or exit the competition before switching players','info'); return; }
+    showWho(false);
+  };
+
+  // ---- Daily card ----
+  // How many daily cards in a row, ending today. Gaps of up to 3 days are allowed so weekends do not break it.
+  function dailyRun(){
+    const ks=Object.keys(prog.daily).sort().reverse();
+    if(!ks.length || ks[0]!==today()) return 0;
+    let run=1;
+    for(let i=1;i<ks.length;i++){
+      if(Math.round((toDate(ks[i-1])-toDate(ks[i]))/864e5)<=3) run++; else break;
+    }
+    return run;
+  }
+  function startDaily(){
+    if(comp) return;
+    if(!daily) prevView={mode,level};
+    daily=true; dailyDate=today(); mode='classic'; level='medium';
+    $('level').value=level; applyModeUI(); renderStats(); newCard();
+  }
+  // Leave the daily card and go back to the mode and level the player had before.
+  function endDaily(){
+    daily=false;
+    if(prevView){ mode=prevView.mode; level=prevView.level; prevView=null; }
+    $('level').value=level; applyModeUI(); renderStats();
+  }
+  const dailyText = r => `24Game daily card, ${niceDate(dailyDate||today())}: solved in ${fmtTime(r.t)}${r.h?' (with help)':''}\n${SITE}`;
+  async function shareText(text, btn){
+    const was=btn.textContent;
+    try{
+      if(navigator.share && isMobile){ await navigator.share({text}); return; }
+      await navigator.clipboard.writeText(text);
+      btn.textContent='Copied!';
+    }catch(e){ if(e&&e.name==='AbortError') return; btn.textContent='Copy failed'; }
+    setTimeout(()=>{ btn.textContent=was; },1500);
+  }
+  function showDaily(){
+    const d=today();
+    openSheet(b=>{
+      b.appendChild(el('h2',null,'Daily card'));
+      b.appendChild(el('p',null,niceDate(d)+'. Everyone gets the same card today.'));
+      const rows=[];
+      players.forEach(p=>{
+        const pr=(me && p.id===me.id) ? prog : store.get('p'+p.id+'_prog',null);
+        const r=pr && pr.daily && pr.daily[d];
+        if(r) rows.push({p, r, mine:!!(me && p.id===me.id)});
+      });
+      if(!me && prog.daily[d]) rows.push({p:{avatar:'👤',name:'Guest'}, r:prog.daily[d], mine:true});
+      rows.sort((a,c)=>(a.r.h-c.r.h)||(a.r.t-c.r.t));
+      if(rows.length){
+        const L=el('div','dlist'); b.appendChild(L);
+        rows.forEach((x,i)=>{
+          const r=el('div',x.mine?'me':null);
+          r.appendChild(el('span',null,`${i+1}. ${x.p.avatar} ${x.p.name}`));
+          const t=el('span',null,fmtTime(x.r.t)); if(x.r.h) t.appendChild(el('small',null,' with help'));
+          r.appendChild(t); L.appendChild(r);
+        });
+      } else b.appendChild(el('p',null,'No one on this device has solved it yet.'));
+      const mine=prog.daily[d];
+      addBtn(b, mine?'Play it again (practice)':"Play today's card", ()=>{ closeSheet(); startDaily(); }, 'primary');
+      if(mine){ const s=addBtn(b,'Share my result',()=>shareText(dailyText(mine),s)); }
+      addBtn(b,'Close',closeSheet);
+    });
+  }
+  function showDailyPanel(first){
+    const c=$('dpanel'); c.innerHTML='';
+    const r=prog.daily[dailyDate];
+    c.appendChild(el('div','ch-title', first ? `Daily card done in ${fmtTime(r.t)}!` : 'Daily card: practice run'));
+    const row=el('div','ch-row'); c.appendChild(row);
+    addBtn(row,"Today's board",showDaily);
+    if(r){ const s=addBtn(row,'Share result',()=>shareText(dailyText(r),s)); }
+    c.style.display='block';
+  }
+
+  // ---- Panels under the board ----
   const MODE_LABEL={classic:'Classic',var:'Variables',neg:'Negatives'};
   const LEVEL_LABEL={easy:'Easy',medium:'Medium',hard:'Hard',xhard:'Extra Hard'};
-  function hideChallenge(){ const c=$('challenge'); c.style.display='none'; c.innerHTML=''; }
+  const hidePanel = id => { const c=$(id); c.style.display='none'; c.innerHTML=''; };
+  const hideChallenge = () => hidePanel('challenge');
   function showChallenge(n){
     const c=$('challenge'); c.innerHTML='';
-    const t=document.createElement('div'); t.className='ch-title'; t.textContent=`${n} in a row! Ready for a challenge?`; c.appendChild(t);
-    const row=document.createElement('div'); row.className='ch-row'; c.appendChild(row);
-    const add=(label,fn)=>{
-      const b=document.createElement('button'); b.className='btn'; b.textContent=label;
-      b.onclick=()=>{ hideChallenge(); if(fn) fn(); };
-      row.appendChild(b);
-    };
+    c.appendChild(el('div','ch-title',`${n} in a row! Ready for a challenge?`));
+    const row=el('div','ch-row'); c.appendChild(row);
+    const add=(label,fn)=>addBtn(row,label,()=>{ hideChallenge(); if(fn) fn(); });
     const order=['easy','medium','hard','xhard'], i=order.indexOf(level);
     if(i<order.length-1) add('Harder level ('+LEVEL_LABEL[order[i+1]]+')', ()=>setLevel(order[i+1]));
     ['classic','var','neg'].filter(m=>m!==mode).forEach(m=>add('Try '+MODE_LABEL[m], ()=>setMode(m)));
     add('Keep going');
     c.style.display='block';
   }
+  // "Find another way": the ways found so far on this card, and an offer to look for one more.
+  function showWays(){
+    const c=$('ways'); c.innerHTML='';
+    const k=card.found.size, N=card.sols.length;
+    c.appendChild(el('div','ch-title', k>=N ? `You found all ${N} ways!` : `You found ${k} of ${N} ways. Can you find another?`));
+    c.appendChild(el('div','ch-list',[...card.found.values()].map(d=>'✓ '+d+' = 24').join('\n')));
+    if(k<N){ const row=el('div','ch-row'); c.appendChild(row); addBtn(row,'Find another way',startReplay); }
+    c.style.display='block';
+  }
+  function startReplay(){
+    replay=true; done=false; won=false;
+    resetBoards(); glow.clear(); hintLevel=0; hintAt=-1;
+    $('hintBox').className='hint'; $('hintBox').textContent='';
+    hideChallenge(); hidePanel('dpanel');
+    setMsg(defaultMsg()); render();
+  }
+
   function setLevel(l){
-    level=l; $('level').value=l; store.set('level',level); seen.clear(); renderStats(); newCard();
+    if(comp) return;
+    if(daily) endDaily();
+    level=l; $('level').value=l; pstore.set('level',level); seen.clear(); renderStats(); newCard();
   }
   function setMode(m){
-    if(m===mode) return;
-    mode=m; store.set('mode',mode); seen.clear(); applyModeUI(); renderStats(); newCard();
+    if(comp) return;
+    const was=daily; if(daily) endDaily();
+    if(m===mode && !was) return;
+    mode=m; pstore.set('mode',mode); seen.clear(); applyModeUI(); renderStats(); newCard();
   }
-  const defaultMsg = () => mode==='var' ? (xVal==null ? 'Pick a value for ?' : 'Make 24 on both wheels') : 'Make 24';
+  const defaultMsg = () => mode==='var' ? (xVal==null ? 'Tap ? to pick its value' : 'Make 24 on both sides')
+    : replay ? 'Find a different way to make 24' : 'Make 24';
 
   function applyModeUI(){
     document.querySelectorAll('#seg button').forEach(b=>b.classList.toggle('on', b.dataset.mode===mode));
     $('foot').textContent = mode==='var'
-      ? 'Find the ? (1-9) that makes 24 on both wheels. Each wheel uses its three numbers plus the shared ?, each once.'
+      ? 'Find the ? (1-9) that makes 24 on both sides. Each side uses its three numbers plus the shared ?, each once.'
       : mode==='neg'
       ? 'Some numbers are negative. Combine all four with + − × ÷ to make 24. Each number is used once.'
       : 'Combine all four numbers with + − × ÷ to make 24. Each number is used once.';
   }
 
   function newCard(){
-    hideChallenge();
+    ['challenge','ways','dpanel','proof'].forEach(hidePanel);
     const needBuild = mode==='var' && !vpools[VLEVELS[level].max];
     if(needBuild){ setMsg('Building cards...'); setTimeout(doNew,30); } else doNew();
   }
@@ -527,7 +1114,7 @@ if (typeof document !== 'undefined') (function(){
     const gen = () => mode==='var' ? generateVar(level, seen, card && card.x)
             : mode==='neg' ? generateNeg(level, seen)
             : generate(level, seen);
-    let c = gen();
+    let c = daily ? dailyCard(dailyDate) : gen();
     // Ran out of unseen cards (small pools like Variables easy): start the cycle over.
     if(!c && seen.size){ seen.clear(); c = gen(); }
     if(!c){ setMsg('Could not generate a card, try again','bad'); return; }
@@ -535,34 +1122,25 @@ if (typeof document !== 'undefined') (function(){
     card = c; xVal = null;
     resetBoards();
     startT = Date.now(); clearInterval(timer); timer=setInterval(tick,500); tick();
-    done=false; clean=true; hintsShown=0; hintList=[];
-    if(mode==='var'){
-      const j=a=>a.join(', ');
-      hintList=[
-        `Left wheel makes 24 with ? = ${j(c.VA)}`,
-        `Right wheel makes 24 with ? = ${j(c.VB)}`,
-        `So ? = ${c.x}`,
-        `Left wheel steps:\n${c.solsA[0].s.join('\n')}`,
-        `Right wheel steps:\n${c.solsB[0].s.join('\n')}`
-      ];
-    } else {
-      hintList = c.sols[0].s.map((_,i)=>c.sols[0].s.slice(0,i+1).join('\n')+(i<c.sols[0].s.length-1?'\n...':''));
-    }
+    done=false; won=false; clean=true; replay=false; wrongHit=false;
+    hintLevel=0; hintAt=-1; varStage=0; attempts=1; xPicks=0; glow.clear();
     $('hintBox').className='hint'; $('hintBox').textContent='';
-    $('next').className='btn primary';
-    $('next').textContent='New card';
     setMsg(defaultMsg());
     render();
   }
 
+  // Board tiles keep a fixed slot so nothing jumps around when two tiles are combined.
+  // In Variables mode the empty slot sits next to the center so the shared ? tile can overlap both sides.
   function initItems(b){
-    if(mode!=='var') return card.nums.map(n=>({v:[n,1]}));
-    return (b===0 ? card.A : card.B).map(n=>({v:[n,1]}));
+    const mk = (n,slot) => { const it=leaf(n); it.slot=slot; delete it.s; delete it.ref; return it; };
+    if(mode!=='var') return card.nums.map((n,i)=>mk(n,i));
+    const slots = b===0 ? [0,1,2] : [0,1,3];
+    return (b===0 ? card.A : card.B).map((n,i)=>mk(n,slots[i]));
   }
-  // In Variables mode each wheel has its own unused copy of the shared ? (xLeft).
+  // In Variables mode each side has its own unused copy of the shared ? (xLeft).
   function resetBoards(){
     const n = mode==='var' ? 2 : 1;
-    boards = Array.from({length:n}, (_,b)=>({items:initItems(b), solved:false, xLeft:mode==='var'}));
+    boards = Array.from({length:n}, (_,b)=>({items:initItems(b), solved:false, xLeft:mode==='var', log:[]}));
     history=[]; sel=null; selOp=null;
   }
 
@@ -571,35 +1149,44 @@ if (typeof document !== 'undefined') (function(){
     return d===1 ? sgn(n) : `<span style="display:inline-flex;flex-direction:column;align-items:center;line-height:1.05"><span style="border-bottom:3px solid currentColor;padding:0 6px">${sgn(n)}</span><span>${d}</span></span>`;
   }
   const boxFor = b => mode==='var' ? $('wc'+b) : $('cards');
-
-  // Grid slot for each item. In Variables mode the empty slot sits next to the center
-  // so the shared ? tile can overlap both wheels.
-  const slotPos = b => mode!=='var' ? [0,1,2,3] : (b===0 ? [0,1,2] : [0,1,3]);
-  const itemEl = (b,i) => boxFor(b).children[slotPos(b)[i]];
+  const itemEl = (b,i) => boxFor(b).children[boards[b].items[i].slot];
 
   function fill(b, pop){
-    const box=boxFor(b); box.innerHTML='';
-    const pos=slotPos(b);
-    const bySlot={};
-    boards[b].items.forEach((it,i)=>{ bySlot[pos[i]]=i; });
-    const total = mode!=='var' ? boards[b].items.length : 4;
-    for(let s=0;s<total;s++){
-      const el=document.createElement('button');
-      if(!(s in bySlot)){ el.className='num ph'; el.tabIndex=-1; el.setAttribute('aria-hidden','true'); box.appendChild(el); continue; }
-      const i=bySlot[s], it=boards[b].items[i];
+    const box=boxFor(b), bd=boards[b]; box.innerHTML='';
+    for(let s=0;s<4;s++){
+      const e=document.createElement('button');
+      const i=bd.items.findIndex(it=>it.slot===s);
+      if(i<0){ e.className='num ph'; e.tabIndex=-1; e.setAttribute('aria-hidden','true'); box.appendChild(e); continue; }
+      const it=bd.items[i];
       let cls='num';
       if(sel && sel.b===b && sel.i===i) cls+=' sel';
       if(it.res) cls+=' res';
       if(it.v[1]!==1) cls+=' frac';
-      if(pop && pop.b===b && pop.i===i) cls+=' pop';
-      el.className=cls;
-      el.innerHTML = label(it);
-      el.setAttribute('aria-label', fmt(it.v));
-      el.onclick=()=>pick(b,i);
-      box.appendChild(el);
+      if(bd.solved) cls+=' win';
+      if(glow.has(b+':'+i)) cls+=' glow';
+      if(pop && pop.b===b && pop.i===i) cls+= pop.shake ? ' shake' : ' pop';
+      e.className=cls;
+      e.innerHTML = label(it);
+      e.setAttribute('aria-label', fmt(it.v));
+      e.onclick=()=>pick(b,i);
+      box.appendChild(e);
     }
   }
 
+  function renderSteps(){
+    const box=$('steps'); box.innerHTML='';
+    history.forEach((h,k)=>{
+      const s=el('button','step');
+      if(mode==='var') s.appendChild(el('small',null,NAMES[h.b][0]));
+      s.appendChild(document.createTextNode(h.text));
+      s.disabled = comp || done;
+      if(!s.disabled) s.title='Undo back to here';
+      s.onclick=()=>undoTo(k);
+      box.appendChild(s);
+    });
+  }
+
+  const levelPips = () => { const n=['easy','medium','hard','xhard'].indexOf(level)+1; return '●'.repeat(n)+'○'.repeat(4-n)+' '+LEVEL_LABEL[level]; };
   function render(pop){
     const isVar = mode==='var';
     $('cards').style.display = isVar ? 'none' : 'grid';
@@ -609,33 +1196,41 @@ if (typeof document !== 'undefined') (function(){
       boards.forEach((bd,b)=>$('wh'+b).classList.toggle('ok', bd.solved));
       const br=$('bridge');
       br.textContent = xVal==null ? '?' : xVal;
-      br.className = 'num bridge'+(xVal!=null?' set':'')+(sel&&sel.x?' sel':'')+(boards.every(t=>!t.xLeft)?' dim':'');
+      br.className = 'num bridge'+(xVal!=null?' set':' ask')+(sel&&sel.x?' sel':'')
+        +(xVal!=null && boards.every(t=>!t.xLeft)?' dim':'')+(glow.has('x')?' glow':'');
       br.onclick = pickShared;
-      document.querySelectorAll('.pk').forEach(p=>{
-        p.classList.toggle('on', +p.dataset.x===xVal);
-        p.disabled = done;
-      });
+      const xb=$('xBtn');
+      xb.textContent = xVal==null ? 'Pick a value for ?' : `? = ${xVal}  (tap to change)`;
+      xb.disabled = done;
     }
     document.querySelectorAll('.op').forEach(o=>o.classList.toggle('sel', o.dataset.op===selOp));
-    $('undo').disabled = history.length===0 || done;
+    $('undo').disabled = comp || history.length===0 || done;
     $('reset').disabled = history.length===0 || done;
-    $('hint').disabled = done;
-    $('skip').disabled = false;
-    $('reveal').disabled = done;
+    $('hint').disabled = comp || done;
+    const nx=$('next');
+    nx.textContent = (done || replay) ? 'Next card' : 'Skip';
+    nx.className = 'btn'+(done?' primary':'');
+    nx.disabled = comp && !done;
+    $('level').disabled = comp;
+    document.querySelectorAll('#seg button').forEach(b=>b.disabled = comp);
+    $('target').classList.toggle('ok', !!(done && won));
+    $('target').textContent = done && won ? '✓ 24' : '= 24';
+    $('blabel').textContent = daily ? 'Daily card · '+niceDate(dailyDate) : replay ? 'Find another way' : comp && attempts>1 ? 'Attempt '+attempts : levelPips();
+    renderSteps();
   }
 
   function pick(b,i){
     if(done) return;
-    if(mode==='var' && xVal==null){ setMsg('Pick a value for ? first','info'); return; }
+    if(mode==='var' && xVal==null){ showX(); return; }
     if(boards[b].solved) return;
     if(sel===null){ sel={b,i}; render(); return; }
     if(sel.x){
       // shared ? was selected first: x op this number
       if(!selOp){ sel={b,i}; render(); return; }
-      if(!boards[b].xLeft){ setMsg(`? is already used on the ${NAMES[b]} wheel`,'bad'); return; }
+      if(!boards[b].xLeft){ setMsg(`? is already used on the ${NAMES[b]} side`,'bad'); return; }
       combine(b, {x:true}, {i}, selOp); return;
     }
-    if(sel.b===b && sel.i===i){ sel=null; render(); return; }
+    if(sel.b===b && sel.i===i){ sel=null; selOp=null; render(); return; }
     if(sel.b!==b || !selOp){ sel={b,i}; render(); return; }
     combine(b, {i:sel.i}, {i}, selOp);
   }
@@ -643,50 +1238,71 @@ if (typeof document !== 'undefined') (function(){
   // Tap on the shared ? tile (Variables mode)
   function pickShared(){
     if(done) return;
-    if(xVal==null){ setMsg('Pick a value for ? first','info'); return; }
+    if(xVal==null){ showX(); return; }
     if(sel===null){ sel={x:true}; render(); return; }
-    if(sel.x){ sel=null; render(); return; }
+    if(sel.x){ sel=null; selOp=null; render(); return; }
     if(!selOp){ sel={x:true}; render(); return; }
-    if(!boards[sel.b].xLeft){ setMsg(`? is already used on the ${NAMES[sel.b]} wheel`,'bad'); return; }
+    if(!boards[sel.b].xLeft){ setMsg(`? is already used on the ${NAMES[sel.b]} side`,'bad'); return; }
     combine(sel.b, {i:sel.i}, {x:true}, selOp);
   }
 
-  // Operands are {i: itemIndex} or {x:true} (the shared ?). Result replaces both.
+  // A copy of the first tile slides into the second one, so the merge reads as one motion.
+  function ghost(from, to){
+    if(reduceMotion || !from || !to) return;
+    const g=el('div','num ghost'); g.innerHTML=from.html;
+    Object.assign(g.style,{left:from.r.left+'px',top:from.r.top+'px',width:from.r.width+'px',height:from.r.height+'px',aspectRatio:'auto',fontSize:from.fs});
+    document.body.appendChild(g);
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      g.style.transform=`translate(${to.left-from.r.left}px,${to.top-from.r.top}px) scale(.7)`; g.style.opacity='0';
+    }));
+    setTimeout(()=>g.remove(),240);
+  }
+
+  // Operands are {i: itemIndex} or {x:true} (the shared ?). The result takes the second tile's place.
   function combine(b, A, B, op){
     const bd=boards[b];
-    const val = o => o.x ? [xVal,1] : bd.items[o.i].v;
-    const v=apply(op,val(A),val(B));
+    const node = o => o.x ? {v:[xVal,1], d:String(xVal), c:String(xVal)} : bd.items[o.i];
+    const elOf = o => o.x ? $('bridge') : itemEl(b,o.i);
+    const a=node(A), z=node(B);
+    const v=apply(op,a.v,z.v);
     if(!v){
       setMsg('Cannot divide by zero','bad');
-      const el = B.x ? $('bridge') : itemEl(b,B.i);
-      if(el) el.classList.add('shake');
+      const e=elOf(B); if(e) e.classList.add('shake');
       sel=null; selOp=null; setTimeout(()=>render(),300); return;
     }
-    history.push({b, items:bd.items.map(t=>({...t})), xLeft:bd.xLeft});
+    const keep = B.x ? A : B, move = B.x ? B : A; // the tile that stays, the tile that slides in
+    const me1=elOf(move), ke=elOf(keep);
+    const from = me1 && {r:me1.getBoundingClientRect(), html:me1.innerHTML, fs:getComputedStyle(me1).fontSize};
+    const to = ke && ke.getBoundingClientRect();
+    const text = fmtP(a.v)+' '+SYM[op]+' '+fmtP(z.v)+' = '+fmt(v);
+    history.push({b, items:bd.items.map(t=>({...t})), xLeft:bd.xLeft, log:bd.log.slice(), text});
+    bd.log.push({t:text, op, a:a.v, b:z.v, v});
+    const slot = bd.items[keep.i].slot;
     const used=[A,B].filter(o=>!o.x).map(o=>o.i);
     if(A.x||B.x) bd.xLeft=false;
-    const rest=bd.items.filter((_,k)=>!used.includes(k));
-    bd.items=[...rest,{v,res:true}];
-    sel=null; selOp=null;
-    const side = mode==='var' ? NAMES[b]+' wheel' : 'That';
+    bd.items = bd.items.filter((_,k)=>!used.includes(k));
+    bd.items.push({v, res:true, slot, c:canon(op,a.c,z.c), d:'('+a.d+' '+SYM[op]+' '+z.d+')'});
+    sel=null; selOp=null; glow.clear();
+    const at = {b, i:bd.items.length-1};
     if(bd.items.length===1 && !bd.xLeft){
       if(v[0]===24 && v[1]===1){
         bd.solved=true;
-        if(boards.every(t=>t.solved)){ render({b,i:0}); return win(); }
-        setMsg(`${side} done, nice! Now the other wheel.`,'good');
+        if(boards.every(t=>t.solved)){ render(at); ghost(from,to); return win(); }
+        setMsg(`${NAMES[b]} side done, nice! Now the other side.`,'good');
       } else {
+        wrongHit=true; at.shake=true;
         const tm=pickMsg('try',TRY_MSGS);
-        setMsg(mode==='var'
-          ? `${tm} The ${side.toLowerCase()} makes ${fmt(v)}, not 24.`
-          : `${tm} That makes ${fmt(v)}.`,'bad');
+        setMsg(mode==='var' ? `${tm} The ${NAMES[b].toLowerCase()} side makes ${fmt(v)}, not 24.` : `${tm} That makes ${fmt(v)}.`,
+          'bad', false, comp ? {label:'Try again', fn:doReset} : {label:'Undo last step', fn:doUndo});
         sfx('try');
       }
     } else setMsg(defaultMsg());
-    render({b,i:bd.items.length-1});
+    render(at); ghost(from,to);
   }
 
   function win(){
-    done=true; clearInterval(timer);
+    if(replay) return replayWin();
+    done=true; won=true; clearInterval(timer);
     const secs=Math.floor((Date.now()-startT)/1000);
     const s=st();
     s.solved++;
@@ -697,37 +1313,122 @@ if (typeof document !== 'undefined') (function(){
       if(b==null || secs<b){ if(b!=null) newBest=true; s.best[level]=secs; }
     } else s.streak=0;
     saveStats();
+    prog.modes[mode]=1; prog.levels[level]=1;
+    let firstDaily=false;
+    if(daily && !prog.daily[dailyDate]){ prog.daily[dailyDate]={t:secs, h:clean?0:1}; firstDaily=true; }
+    if(mode!=='var'){ const it=boards[0].items[0]; card.found=new Map([[it.c, stripP(it.d)]]); }
+    let sky=false;
+    if(clean){ sessionClean++; sky=addDeco(); }
+    const logs=[].concat(...boards.map(b=>b.log));
+    const fresh=award({
+      win:true, mode, level, secs, clean, comp, daily, prog,
+      ops:logs.map(l=>l.op), inter:logs.map(l=>l.v),
+      last: mode!=='var' ? boards[0].log[boards[0].log.length-1] : null,
+      key: mode!=='var' ? card.key : '',
+      streak:s.streak, total:S.classic.solved+S.var.solved+S.neg.solved,
+      xPicks, comeback:wrongHit, sessionClean, sky,
+      found: card.found ? card.found.size : 0, ways: mode!=='var' ? card.sols.length : 0,
+      dailyRun: daily ? dailyRun() : 0
+    });
+    saveProg();
     const t=fmtTime(secs), extra = mode==='var' ? ` ? = ${xVal}.` : '';
-    let text, big=false;
+    let text, big=fresh.length>0 || sky;
     if(!clean) text = `${pickMsg('help',HELP_MSGS)}${extra} Solved in ${t} (with help)`;
     else {
       const milestone=isMilestone(s.streak);
-      text = (milestone ? streakMsg(s.streak) : pickMsg('win',WIN_MSGS)) + `${extra} Solved in ${t}`;
+      text = (milestone ? streakMsg(s.streak) : personal(pickMsg('win',WIN_MSGS))) + `${extra} Solved in ${t}`;
       if(newBest) text += '. New best time!';
-      big = milestone || newBest;
+      if(sky) text += '. Your world is full!';
+      big = big || milestone || newBest;
     }
     setMsg(text,'good',true);
     sfx(big?'big':'win');
-    if(big) confetti();
-    $('next').textContent='Next card';
+    if(big) effect();
     renderStats(); render();
-    if(clean && s.streak%5===0) showChallenge(s.streak);
+    if(fresh.length) showToast(fresh);
+    // A full world empties so the next 24 can be collected.
+    if(sky) setTimeout(()=>{ sceneCount=0; decos=[]; renderScene(); renderTrail(); },3500);
+    if(comp) showProof(secs);
+    else {
+      if(daily) showDailyPanel(firstDaily);
+      if(mode!=='var' && card.sols.length>1) showWays();
+      if(clean && s.streak%5===0) showChallenge(s.streak);
+    }
   }
+
+  // Reaching 24 while looking for another way on a card that is already solved.
+  function replayWin(){
+    const it=boards[0].items[0];
+    if(card.found.has(it.c)){
+      boards[0].solved=false;
+      setMsg('You already found that way. Try a different one!','info',false,{label:'Start over',fn:doReset});
+      render(); return;
+    }
+    card.found.set(it.c, stripP(it.d));
+    done=true; won=true; replay=false;
+    const k=card.found.size, N=card.sols.length;
+    const fresh=award({win:false, found:k, ways:N, prog, sky:false});
+    setMsg(k>=N ? `You found every way! All ${N}.` : `New way found! That is ${k} of ${N}.`,'good',true);
+    const big = k>=N || fresh.length>0;
+    sfx(big?'big':'win');
+    if(big) effect();
+    render();
+    if(fresh.length) showToast(fresh);
+    showWays();
+  }
+
+  const esc = t => String(t).replace(/[&<>]/g, ch=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[ch]));
+  function showProof(secs){
+    const nums = mode==='var'
+      ? `Left ${card.A.join(', ')} | Right ${card.B.join(', ')} | ? = ${xVal}`
+      : card.nums.map(sgn).join(', ');
+    const steps = boards.map((bd,b)=>(mode==='var' ? NAMES[b]+' side:\n' : '')+bd.log.map(l=>l.t).join('\n')).join('\n\n');
+    const now = new Date();
+    const when = now.toLocaleDateString()+' '+now.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
+    const rows = [['Player', me?me.name:'Guest'], ['Mode', MODE_LABEL[mode]], ['Level', LEVEL_LABEL[level]], ['Card', nums],
+      ['Time', fmtTime(secs)], ['Attempt', attempts===1 ? '1 (first try)' : String(attempts)], ['When', when]];
+    const p=$('proof');
+    p.innerHTML = `<h2>✓ Competition: solved without help</h2>
+      <dl>${rows.map(r=>`<dt>${r[0]}</dt><dd>${esc(r[1])}</dd>`).join('')}</dl>
+      <pre>${esc(steps)}</pre>`;
+    const row=el('div','row2'); p.appendChild(row);
+    const plain = 'Competition: solved without help\n'+rows.map(r=>r[0]+': '+r[1]).join('\n')+'\n\n'+steps;
+    const cp=addBtn(row,'Copy proof',()=>shareText(plain,cp));
+    addBtn(row,'New competition card',newCard,'primary');
+    p.style.display='block';
+    p.scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
+
+  // Competition mode: always deals a fresh card on entry.
+  function toggleComp(){
+    if(comp && !done && !confirm('Exit competition? This attempt will be lost.')) return;
+    comp=!comp;
+    root.classList.toggle('comp',comp);
+    if(comp && daily) endDaily();
+    newCard();
+  }
+  $('compExit').onclick=toggleComp;
 
   // Variables: choose the value for ?
   function chooseX(y){
     if(done || xVal===y) return;
-    xVal=y; resetBoards(); setMsg(defaultMsg()); render();
+    xVal=y; xPicks++; resetBoards(); glow.clear(); setMsg(defaultMsg()); render();
   }
-  (function buildPicker(){
-    const box=$('pks');
-    for(let y=1;y<=9;y++){
-      const b=document.createElement('button');
-      b.className='pk'; b.dataset.x=y; b.textContent=y;
-      b.onclick=()=>chooseX(y);
-      box.appendChild(b);
-    }
-  })();
+  function showX(){
+    if(done) return;
+    openSheet(b=>{
+      b.appendChild(el('h2',null,'What is ?'));
+      b.appendChild(el('p',null,'One number from 1 to 9 makes 24 on both sides.'));
+      const g=el('div','xgrid'); b.appendChild(g);
+      for(let y=1;y<=9;y++){
+        const x=el('button',y===xVal?'on':null,y);
+        x.onclick=()=>{ closeSheet(); chooseX(y); };
+        g.appendChild(x);
+      }
+      addBtn(b,'Cancel',closeSheet);
+    });
+  }
+  $('xBtn').onclick=showX;
 
   document.querySelectorAll('.op').forEach(o=>o.onclick=()=>{
     if(done) return;
@@ -736,37 +1437,81 @@ if (typeof document !== 'undefined') (function(){
     render();
   });
 
-  $('undo').onclick=()=>{
-    if(!history.length||done) return;
+  function popStep(){
     const h=history.pop();
-    boards[h.b].items=h.items; boards[h.b].xLeft=h.xLeft; boards[h.b].solved=false;
-    sel=null; selOp=null; setMsg(defaultMsg()); render();
+    const bd=boards[h.b];
+    bd.items=h.items; bd.xLeft=h.xLeft; bd.log=h.log; bd.solved=false;
+  }
+  // Undo back so that k steps remain.
+  function undoTo(k){
+    if(comp || done || history.length<=k) return;
+    while(history.length>k) popStep();
+    sel=null; selOp=null; glow.clear(); setMsg(defaultMsg()); render();
+  }
+  function doUndo(){ undoTo(history.length-1); }
+  // In competition a reset is allowed but counted, so the proof shows which attempt worked.
+  function doReset(){
+    if(done || !history.length) return;
+    if(comp) attempts++;
+    resetBoards(); glow.clear(); setMsg(defaultMsg()); render();
+  }
+  $('undo').onclick=doUndo;
+  $('reset').onclick=doReset;
+  // One button: "Skip" while playing (resets the streak), "Next card" once the card is finished.
+  $('next').onclick=()=>{
+    if(comp && !done) return;
+    if(!done && !replay){ st().streak=0; saveStats(); renderStats(); }
+    if(daily) endDaily();
+    newCard();
   };
-  $('reset').onclick=()=>{ if(done) return; resetBoards(); setMsg(defaultMsg()); render(); };
-  $('skip').onclick=()=>{ if(!done){ st().streak=0; saveStats(); renderStats(); } newCard(); };
-  $('next').onclick=newCard;
-  $('hint').onclick=()=>{
-    if(done) return;
-    clean=false;
-    hintsShown=Math.min(hintsShown+1, hintList.length);
-    const box=$('hintBox'); box.className='hint show';
-    box.textContent = mode==='var'
-      ? 'Hint:\n'+hintList.slice(0,hintsShown).join('\n\n')
-      : 'Hint:\n'+hintList[hintsShown-1];
-  };
-  $('reveal').onclick=()=>{
-    if(done) return;
-    clean=false; done=true; clearInterval(timer);
-    st().streak=0; saveStats(); renderStats();
-    const box=$('hintBox'); box.className='hint show';
-    if(mode==='var'){
-      box.textContent=`? = ${card.x}\nLeft: ${card.solsA[0].d} = 24\nRight: ${card.solsB[0].d} = 24`;
-      xVal=card.x; resetBoards();
-    } else box.textContent='One solution:\n'+card.sols[0].d+' = 24';
-    setMsg('Answer shown','info');
-    $('next').textContent='Next card';
+
+  // ---- Hints: a ladder worked out from the board as it is now ----
+  // 1 what to aim for, 2 which tiles to start with, 3 the next step, 4 every step from here.
+  function showHint(text){ const box=$('hintBox'); box.className='hint show'; box.textContent=text; }
+  function doHint(){
+    if(comp || done) return;
+    if(!replay) clean=false;
+    glow.clear();
+    if(mode==='var' && xVal!==card.x){
+      varStage=Math.min(varStage+1,3);
+      const j=a=>a.join(', ');
+      showHint([`The left side can make 24 when ? is ${j(card.VA)}.`,
+                `The right side can make 24 when ? is ${j(card.VB)}.`,
+                `So ? = ${card.x}.`].slice(0,varStage).join('\n'));
+      render(); return;
+    }
+    const b = mode==='var' && boards[0].solved ? 1 : 0, bd=boards[b];
+    const pre = mode==='var' ? NAMES[b]+' side: ' : '';
+    const start = bd.items.map((it,i)=>({v:it.v, d:it.d, c:it.c, s:[], ref:i}));
+    if(bd.xLeft) start.push({v:[xVal,1], d:String(xVal), c:String(xVal), s:[], ref:'x'});
+    const all = solveItems(start);
+    const sols = replay ? all.filter(q=>!card.found.has(q.c)) : all;
+    if(!sols.length){
+      showHint(pre + (all.length ? 'From here you can only reach a way you already found. Undo a step and try something else.'
+        : "This path can't reach 24. Undo a step and try something else."));
+      render(); return;
+    }
+    // Prefer a solution that stays in whole, positive numbers.
+    const cost = q => q.st.reduce((n,x)=>n+(x.v[1]!==1?10:0)+(x.v[0]<0?4:0),0);
+    const best = sols.reduce((m,q)=>cost(q)<cost(m)?q:m);
+    const first=best.st[0], last=best.st[best.st.length-1];
+    hintLevel = hintLevel>=3 && hintAt!==history.length ? 3 : Math.min(hintLevel+1,4);
+    hintAt=history.length;
+    if(best.st.length===1 && hintLevel<3) hintLevel=3;
+    const mark = () => [first.ar,first.br].forEach(r=>glow.add(r==='x' ? 'x' : b+':'+r));
+    let text;
+    if(hintLevel<=2){
+      const need=[];
+      if(last.ar===undefined) need.push(fmt(last.a));
+      if(last.br===undefined) need.push(fmt(last.b));
+      text = `Try to make ${need.join(' and ')}. Then ${fmtP(last.a)} ${SYM[last.op]} ${fmtP(last.b)} = 24.`;
+      if(hintLevel===2){ mark(); text += '\nStart with the glowing tiles.'; }
+    } else if(hintLevel===3){ mark(); text = 'Next step: '+first.t; }
+    else { mark(); text = 'One way from here:\n'+best.s.join('\n'); }
+    showHint(pre+text);
     render();
-  };
+  }
+  $('hint').onclick=doHint;
   $('level').onchange=e=>setLevel(e.target.value);
   document.querySelectorAll('#seg button').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
 
@@ -775,26 +1520,29 @@ if (typeof document !== 'undefined') (function(){
   $('shareUrl').textContent=SITE;
   const dlg=$('shareDlg');
   const openShare=()=>dlg.classList.add('open'), closeShare=()=>dlg.classList.remove('open');
-  $('shareBtn').onclick=openShare;
   $('closeShare').onclick=closeShare;
   dlg.onclick=e=>{ if(e.target===dlg) closeShare(); };
-  document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeShare(); });
+  document.addEventListener('keydown',e=>{
+    if(e.key!=='Escape') return;
+    closeShare(); if(!sheetLocked) closeSheet();
+  });
   $('copyLink').onclick=async()=>{
     const b=$('copyLink');
     try{
-      if(navigator.share && /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)){
+      if(navigator.share && isMobile){
         await navigator.share({title:"Victoria's 24Game", url:SITE}); return;
       }
       await navigator.clipboard.writeText(SITE);
       b.textContent='Copied!';
     }catch(e){ if(e&&e.name==='AbortError') return; b.textContent='Copy failed'; }
-    setTimeout(()=>{ b.textContent=navigator.share&&/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)?'Share link':'Copy link'; },1500);
+    setTimeout(()=>{ b.textContent=navigator.share&&isMobile?'Share link':'Copy link'; },1500);
   };
-  if(navigator.share && /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)) $('copyLink').textContent='Share link';
+  if(navigator.share && isMobile) $('copyLink').textContent='Share link';
 
-  applyModeUI();
-  renderStats();
-  newCard();
+  // ---- Start: go straight in when this device has one player, otherwise ask who is playing ----
+  const cur=store.get('current',null), p0=players.find(p=>p.id===cur);
+  if(players.length===1 && p0) startSession(p0);
+  else { startSession(null,false); showWho(true); }
 })();
 </script>
 </body>
