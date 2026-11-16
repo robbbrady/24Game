@@ -16,7 +16,7 @@ Three game modes (Classic, Variables, Negatives), four difficulty levels (Easy, 
 
 - **One file:** `index.html` with inline CSS and JS. No frameworks, no build step, no external requests, no audio or image files.
 - **Hosting:** static, GitHub Pages. Must work when opened from a browser on desktop and mobile Safari/Chrome. (Mobile "file preview" panes that do not run JavaScript are not supported; use the hosted URL.)
-- **Persistence:** `localStorage` only, every read and write wrapped in try/catch with in-memory fallback. Keys (all prefixed `g24_`): `players` (list of `{id, name, avatar, theme}`), `current` (last player id), `migrated`, and per player `p<id>_mode`, `p<id>_level`, `p<id>_stats`, `p<id>_vstats`, `p<id>_nstats`, `p<id>_sound`, `p<id>_prog` (`{stickers, daily, modes, levels}`). The older un-prefixed `mode`, `level`, `stats`, `vstats`, `nstats`, `sound` are copied once into the first player created on a device. A guest is held in memory only.
+- **Persistence:** `localStorage` only, every read and write wrapped in try/catch with in-memory fallback. Keys (all prefixed `g24_`): `players` (list of `{id, name, avatar, theme}`), `current` (last player id), `migrated`, and per player `p<id>_mode`, `p<id>_level`, `p<id>_stats`, `p<id>_vstats`, `p<id>_nstats`, `p<id>_sound`, `p<id>_prog` (`{stickers, daily, modes, levels}`). `prog` also holds `points`; each player record also holds `seen` (last played); `seen` (global) is the time of the last tap. The older un-prefixed `mode`, `level`, `stats`, `vstats`, `nstats`, `sound` are copied into a new player only if that player says the progress is theirs. A guest is held in memory only.
 - **Code layout:** pure game logic (solver, generators) lives at top level and is separable from the DOM code, which is inside one `if (typeof document !== 'undefined')` IIFE. Keep this separation: the logic should be testable in Node and portable to other targets (the author has considered an ESP32/C port and a wrapped mobile app).
 - **Layout:** single column, max width 520 px, 16 px gutters, no horizontal scroll at phone width. Order top to bottom: title with player chip and menu button; mode tabs and level on one row; a one-line stats strip; a 24-slot collection strip; the board (target badge, tiles, operators, message, steps strip, hint box, four buttons); panels; footer. The whole game fits one phone screen without scrolling. Colors come from CSS variables; the Classic theme follows `prefers-color-scheme`, the other themes set their own palette.
 
@@ -149,11 +149,24 @@ Teacher-style "prove it yourself" mode, toggled by a button above the mode toggl
 
 ## 12a. Players
 
-- On load: if the device has exactly one saved player and they were the last to play, go straight in. Otherwise show **Who's playing?**: a tile per player (avatar emoji and name), **Add player**, **Just play (nothing saved)**, and **Remove a player** (with a confirm; deletes that player's keys).
+- **One rule for shared and personal devices** (the game cannot tell which it is on). `g24_seen` holds the time of the last tap. On load: no remembered player, show **Who's playing?**; remembered player and last tap under 10 minutes ago (a reload), go straight in; otherwise show **Welcome back** with "Continue as NAME" and "I'm someone else". The same sheet appears after 10 minutes with no tap or key press, checked every 15 seconds and when the page becomes visible again. It cannot be dismissed. Continue keeps the card and does not count the time away; "I'm someone else" goes to Who's playing and starts a fresh session.
+- **Who's playing?**: a tile per player (avatar, name, points, last played), most recent first, plus **Add player**, **Just play (nothing saved)**, **Remove a player** (with a confirm; deletes that player's keys), and, when any player has not played for 30 days, **Tidy up** (lists them, confirm, never automatic).
+- **Bringing progress over is asked, never automatic.** When a new player is saved: if they were just playing as a guest and earned anything, ask "Keep what you just earned?"; otherwise, if the device has un-prefixed stats from before players existed and nobody has claimed them, ask "Is this saved progress yours?". "No, start fresh" leaves the old stats for a later player to claim.
 - Add player: a first name or nickname (max 12 characters) and one of 12 avatar emoji. The screen says "Stays on this device. Nothing is sent anywhere." Names are only ever written with `textContent` or escaped.
 - Right after a new player is saved, the theme picker opens as "Pick your world, NAME" with a "Start playing" button.
 - The player chip in the header shows the avatar, the name, and the newest stickers by time earned: 1 below 430 px wide, 3 from 430 px, 5 from 600 px. It updates when a sticker is earned.
 - Switching player starts a fresh session: new card, session counters cleared, that player's mode, level, theme, sound, stats, and stickers loaded.
+
+## 12f. Points
+
+One running total per player (`prog.points`), shown in the stats strip and on player tiles. Speed never earns points.
+
+- Base by level: Easy 10, Medium 20, Hard 30, Extra Hard 50. Mode multiplier: Classic ×1, Negatives ×1.2, Variables ×1.5 (rounded).
+- Clean solve (no hint): base × streak multiplier, where the multiplier is 1.0 on the first card of a streak and rises 0.1 per card to a cap of 2.0 at 11 in a row.
+- Solve with a hint: half the base, no multiplier (and the streak resets, as before).
+- Each extra way found on a card: +5. First solve of the daily card: +20.
+- The win message shows the gain, e.g. "+22 points (streak ×1.1)".
+- Cards solved before points existed are credited once at a flat 15 each.
 
 ## 12b. Themes and the living world
 

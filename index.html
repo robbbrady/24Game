@@ -191,6 +191,7 @@ select{background:var(--panel);border:1px solid var(--line);border-radius:10px;p
 .ptile{position:relative;background:var(--card);border:2px solid var(--line);border-radius:14px;padding:10px 4px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;font-weight:600;overflow:hidden}
 .ptile .av{font-size:2rem;line-height:1.2}
 .ptile .nm{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.9rem}
+.ptile small{font-size:.66rem;color:var(--muted);font-weight:500;line-height:1.25}
 .ptile.rm{border-color:var(--bad)}
 .ptile.rm::after{content:"\2715";position:absolute;top:4px;right:8px;color:var(--bad);font-weight:800}
 .agrid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
@@ -269,6 +270,7 @@ footer{text-align:center;color:var(--muted);font-size:.78rem}
 
   <section class="stats" aria-label="Stats">
     <span>Time <b id="sTime">0:00</b></span>
+    <span>Points <b id="sPts">0</b></span>
     <span>Solved <b id="sSolved">0</b></span>
     <span>Streak <b id="sStreak">0</b></span>
     <span>Best <b id="sBest">-</b></span>
@@ -573,6 +575,8 @@ if (typeof document !== 'undefined') (function(){
   let comp = false;                                  // competition mode: no help
   let daily = false, dailyDate = null, prevView = null; // daily card: Classic Medium, same for everyone
   let sceneCount = 0, sessionClean = 0, decos = [];  // living background, this session
+  const IDLE_MS = 10*60*1000;                        // untouched this long: ask who is playing
+  let lastActive = Date.now();
 
   const pad = n => String(n).padStart(2,'0');
   const dkey = d => d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
@@ -586,11 +590,12 @@ if (typeof document !== 'undefined') (function(){
     const s=st();
     root.dataset.level=level; // the scene and board change with difficulty
     $('sSolved').textContent = s.solved;
+    $('sPts').textContent = prog.points;
     $('sStreak').textContent = s.streak;
     const b = s.best[level];
     $('sBest').textContent = b==null ? '-' : fmtTime(b);
   }
-  function tick(){ $('sTime').textContent = fmtTime(Math.floor((Date.now()-startT)/1000)); }
+  function tick(){ $('sTime').textContent = fmtTime(Math.max(0,Math.floor((Date.now()-startT)/1000))); }
   // act: optional {label, fn} shown as a small button inside the message
   function setMsg(t,cls,pop,act){
     const m=$('msg'); m.textContent=t; m.className='msg '+(cls||'info');
@@ -617,6 +622,19 @@ if (typeof document !== 'undefined') (function(){
     return `${n} in a row! Incredible!`;
   }
   const isMilestone = n => n===3 || n%5===0;
+
+  // ---- Points: harder cards are worth more, and a streak of clean solves multiplies them ----
+  // Base by level, scaled by mode. Clean solve: +10% per card in the streak after the first, up to double.
+  // Solve with a hint: half the base, no streak bonus. Speed is never rewarded.
+  const PTS = {easy:10, medium:20, hard:30, xhard:50};
+  const MODE_X = {classic:1, neg:1.2, var:1.5};
+  const PTS_WAY = 5, PTS_DAILY = 20; // each extra way found; first solve of the daily card
+  function pointsFor(isClean, streak){
+    const base=Math.round(PTS[level]*MODE_X[mode]);
+    if(!isClean) return {pts:Math.round(base/2), mult:1};
+    const mult=1+Math.min(Math.max(streak-1,0),10)*.1;
+    return {pts:Math.round(base*mult), mult};
+  }
 
   // ---- Sound (synthesized, no files) ----
   let actx = null;
@@ -867,10 +885,13 @@ if (typeof document !== 'undefined') (function(){
       b.appendChild(el('h2',null,"Who's playing?"));
       if(players.length){
         const g=el('div','pgrid'); b.appendChild(g);
-        players.forEach(p=>{
+        // Most recent first, so this week's player is not hunting through last week's.
+        [...players].sort((a,c)=>(c.seen||0)-(a.seen||0)).forEach(p=>{
           const t=el('button','ptile'+(manage?' rm':''));
           t.appendChild(el('span','av',p.avatar)); t.appendChild(el('span','nm',p.name));
-          t.onclick=()=>{ if(manage) removePlayer(p,force); else { closeSheet(); startSession(p); } };
+          const pr=(me && me.id===p.id) ? prog : store.get('p'+p.id+'_prog',null);
+          t.appendChild(el('small',null,((pr&&pr.points)|0)+' pts'+(p.seen?' · '+ago(p.seen):'')));
+          t.onclick=()=>{ if(manage) removePlayer(p,force); else { closeSheet(); startSession(p); markSeen(); } };
           g.appendChild(t);
         });
       } else b.appendChild(el('p',null,'Add your name to keep your stickers and best times on this device.'));
@@ -882,24 +903,63 @@ if (typeof document !== 'undefined') (function(){
       addBtn(b,'+ Add player',()=>showAdd(force),'primary');
       addBtn(b,'Just play (nothing saved)',()=>{ closeSheet(); startSession(null); });
       if(players.length) addBtn(b,'Remove a player',()=>showWho(force,true));
+      // Shared devices collect players who have moved on: offer to clear them, never automatically.
+      const old=players.filter(p=>p.seen && Date.now()-p.seen>30*864e5 && !(me && me.id===p.id));
+      if(old.length) addBtn(b,`Tidy up: remove ${old.length} not seen in 30 days`,()=>{
+        if(!confirm('Remove '+old.map(p=>p.name).join(', ')+'? Their stickers and points on this device will be deleted.')) return;
+        old.forEach(dropPlayer); showWho(force,false);
+      });
       if(!force) addBtn(b,'Cancel',closeSheet);
     }, force);
   }
-  function removePlayer(p,force){
-    if(!confirm(`Remove ${p.name}? Their stickers and best times on this device will be deleted.`)) return;
+  const ago = t => {
+    const d=Math.round((toDate(today())-toDate(dkey(new Date(t))))/864e5);
+    return d<=0 ? 'today' : d===1 ? 'yesterday' : d+' days ago';
+  };
+  // Remember when the current player last played (shown on their tile, used by the tidy-up offer).
+  function markSeen(){ if(me){ me.seen=Date.now(); store.set('players',players); } }
+  function dropPlayer(p){
     players=players.filter(q=>q.id!==p.id);
     store.set('players',players);
     PKEYS.forEach(k=>store.del('p'+p.id+'_'+k));
+  }
+  function removePlayer(p,force){
+    if(!confirm(`Remove ${p.name}? Their stickers and points on this device will be deleted.`)) return;
+    dropPlayer(p);
     if(me && me.id===p.id){ startSession(null); force=true; }
     showWho(force, false);
   }
-  // Stats saved before players existed go to the first player made on this device.
-  function migrate(p){
-    if(store.get('migrated',false)) return;
-    ['stats','vstats','nstats','sound','mode','level'].forEach(k=>{
-      const v=store.get(k,null); if(v!==null) store.set('p'+p.id+'_'+k, v);
-    });
-    store.set('migrated',true);
+  // Earlier progress is never moved to a new player silently: the player is asked.
+  // Two sources: what a guest earned this sitting, or stats saved on this device before players existed.
+  const LEGACY = ['stats','vstats','nstats','sound','mode','level'];
+  function askBringOver(p, go){
+    const solvedIn = get => ['stats','vstats','nstats'].reduce((n,k)=>{ const v=get(k); return n+((v&&v.solved)|0); },0);
+    const gPr = me ? null : guestMem.prog;
+    const gSolved = me ? 0 : solvedIn(k=>guestMem[k]);
+    const gSt = gPr && gPr.stickers ? Object.keys(gPr.stickers).length : 0;
+    const oldSolved = store.get('migrated',false) ? 0 : solvedIn(k=>store.get(k,null));
+    let title, note, bring;
+    if(gSolved || gSt){
+      title='Keep what you just earned?';
+      note=`${gSolved} solved, ${gSt} stickers and ${(gPr&&gPr.points)|0} points from playing as a guest just now.`;
+      bring=()=>{
+        PKEYS.forEach(k=>{ if(k in guestMem) store.set('p'+p.id+'_'+k, guestMem[k]); });
+        p.theme=guestTheme; store.set('players',players); guestMem={};
+      };
+    } else if(oldSolved){
+      title='Is this saved progress yours?';
+      note=`This device has progress saved before names were added: ${oldSolved} cards solved. Only say yes if it is yours.`;
+      bring=()=>{
+        LEGACY.forEach(k=>{ const v=store.get(k,null); if(v!==null) store.set('p'+p.id+'_'+k, v); });
+        store.set('migrated',true);
+      };
+    } else return go();
+    openSheet(b=>{
+      b.appendChild(el('h2',null,title));
+      b.appendChild(el('p',null,note));
+      addBtn(b,'Yes, bring it over',()=>{ bring(); go(); },'primary');
+      addBtn(b,'No, start fresh',go);
+    }, true);
   }
   function showAdd(force){
     openSheet(b=>{
@@ -923,8 +983,8 @@ if (typeof document !== 'undefined') (function(){
         const name=inp.value.replace(/\s+/g,' ').trim().slice(0,12);
         if(!name) return;
         const p={id:Date.now().toString(36)+Math.floor(Math.random()*1296).toString(36), name, avatar:av, theme:'classic'};
-        players.push(p); store.set('players',players); migrate(p);
-        closeSheet(); startSession(p); showThemes(true);
+        players.push(p); store.set('players',players);
+        askBringOver(p, ()=>{ closeSheet(); startSession(p); markSeen(); showThemes(true); });
       },'primary');
       save.disabled=true;
       inp.oninput=()=>{ save.disabled=!inp.value.trim(); };
@@ -944,7 +1004,11 @@ if (typeof document !== 'undefined') (function(){
     if(!LEVELS[level]) level='medium';
     S={ classic:fixStats(pstore.get('stats',null)), var:fixStats(pstore.get('vstats',null)), neg:fixStats(pstore.get('nstats',null)) };
     const pr=pstore.get('prog',null)||{};
-    prog={ stickers:pr.stickers||{}, daily:pr.daily||{}, modes:pr.modes||{}, levels:pr.levels||{} };
+    prog={ stickers:pr.stickers||{}, daily:pr.daily||{}, modes:pr.modes||{}, levels:pr.levels||{},
+      // Cards solved before points existed are credited at a flat 15 each.
+      points: pr.points!=null ? pr.points|0 : 15*(S.classic.solved+S.var.solved+S.neg.solved) };
+    if(pr.points==null && prog.points) saveProg();
+    lastActive=Date.now(); store.set('seen',lastActive);
     soundOn=pstore.get('sound',true)!==false;
     theme=me?me.theme:guestTheme; if(!THEMES[theme]) theme='classic';
     applyTheme(); renderWho();
@@ -1316,6 +1380,8 @@ if (typeof document !== 'undefined') (function(){
     prog.modes[mode]=1; prog.levels[level]=1;
     let firstDaily=false;
     if(daily && !prog.daily[dailyDate]){ prog.daily[dailyDate]={t:secs, h:clean?0:1}; firstDaily=true; }
+    const P=pointsFor(clean, s.streak), gain=P.pts+(firstDaily?PTS_DAILY:0);
+    prog.points+=gain; markSeen();
     if(mode!=='var'){ const it=boards[0].items[0]; card.found=new Map([[it.c, stripP(it.d)]]); }
     let sky=false;
     if(clean){ sessionClean++; sky=addDeco(); }
@@ -1341,6 +1407,7 @@ if (typeof document !== 'undefined') (function(){
       if(sky) text += '. Your world is full!';
       big = big || milestone || newBest;
     }
+    text += `. +${gain} points` + (P.mult>1 ? ` (streak ×${P.mult.toFixed(1)})` : '') + (firstDaily ? ' with the daily bonus' : '');
     setMsg(text,'good',true);
     sfx(big?'big':'win');
     if(big) effect();
@@ -1367,8 +1434,9 @@ if (typeof document !== 'undefined') (function(){
     card.found.set(it.c, stripP(it.d));
     done=true; won=true; replay=false;
     const k=card.found.size, N=card.sols.length;
+    prog.points+=PTS_WAY; saveProg(); renderStats();
     const fresh=award({win:false, found:k, ways:N, prog, sky:false});
-    setMsg(k>=N ? `You found every way! All ${N}.` : `New way found! That is ${k} of ${N}.`,'good',true);
+    setMsg((k>=N ? `You found every way! All ${N}.` : `New way found! That is ${k} of ${N}.`)+` +${PTS_WAY} points`,'good',true);
     const big = k>=N || fresh.length>0;
     sfx(big?'big':'win');
     if(big) effect();
@@ -1540,8 +1608,36 @@ if (typeof document !== 'undefined') (function(){
   if(navigator.share && isMobile) $('copyLink').textContent='Share link';
 
   // ---- Start: go straight in when this device has one player, otherwise ask who is playing ----
+  // ---- Idle check ----
+  // The game cannot know whether a device is shared or personal, so one rule covers both:
+  // after 10 minutes untouched it asks before carrying on as the same player.
+  function showContinue(){
+    const since=lastActive;
+    openSheet(b=>{
+      b.appendChild(el('h2',null,'Welcome back!'));
+      b.appendChild(el('p',null,'Check who is playing before you carry on.'));
+      addBtn(b,'Continue as '+(me ? me.avatar+' '+me.name : 'Guest'),()=>{
+        if(!done && !replay) startT += Date.now()-since; // time away does not count against the card
+        lastActive=Date.now(); store.set('seen',lastActive); markSeen();
+        closeSheet(); tick();
+      },'primary');
+      addBtn(b,"I'm someone else",()=>showWho(true));
+    }, true);
+  }
+  ['pointerdown','keydown'].forEach(ev=>document.addEventListener(ev,()=>{ if(!sheetLocked) lastActive=Date.now(); },true));
+  function idleCheck(){ if(!sheetLocked && Date.now()-lastActive>IDLE_MS) showContinue(); }
+  setInterval(idleCheck,15000);
+  document.addEventListener('visibilitychange',()=>{
+    if(document.visibilityState==='visible') idleCheck(); else store.set('seen',lastActive);
+  });
+  window.addEventListener('pagehide',()=>store.set('seen',lastActive));
+
+  // ---- Start ----
+  // Opened again within 10 minutes (a reload): straight back in. Otherwise ask "Continue as NAME?".
+  // No remembered player: ask who is playing.
   const cur=store.get('current',null), p0=players.find(p=>p.id===cur);
-  if(players.length===1 && p0) startSession(p0);
+  const recent = Date.now()-store.get('seen',0) < IDLE_MS;
+  if(p0){ startSession(p0); if(recent) markSeen(); else showContinue(); }
   else { startSession(null,false); showWho(true); }
 })();
 </script>

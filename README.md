@@ -26,6 +26,8 @@ Each mode has Easy, Medium, Hard, and Extra Hard levels. Extra Hard uses numbers
 
 - Unlimited cards, generated on the fly and always solvable
 - **Players:** the game asks who is playing, so several kids can share one iPad. Each player has their own stickers, best times, and theme. A new player picks a theme right after entering a name, and their newest stickers show beside their name. Names stay on the device; "Just play" needs no name and saves nothing
+- **Shared or personal devices:** after 10 minutes untouched, or when the game is opened again later, it asks "Continue as (name)?" so the next kid on a shared iPad is never playing as the last one. Earlier progress is only moved to a new name if the player says it is theirs
+- **Points:** Easy 10, Medium 20, Hard 30, Extra Hard 50 (Negatives ×1.2, Variables ×1.5). A streak of solves without hints adds 10% per card, up to double. A solve with a hint earns half. Extra ways earn 5 each and the daily card adds 20. Speed never earns points
 - **Themes:** Classic, Space, Ocean, Jungle, Chalkboard, Arcade, and Volcano. Each clean solve adds one thing to your world; collect 24 to fill it. The screen also changes with difficulty: a band of color rises in the background and the board gains a brighter edge on harder levels
 - **Sticker book:** 30 stickers for milestones, math skills (fractions, going below zero, no ×), grit, exploring, and habits, including three secret ones
 - **Daily card:** one card a day, the same for everyone, with a board of every player's time on that device
